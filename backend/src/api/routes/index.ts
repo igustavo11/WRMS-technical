@@ -1,5 +1,6 @@
 import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
 import { authRoutes } from './auth.routes';
+import { dashboardRoutes } from './dashboard.routes';
 import { inventoryRoutes } from './inventory.routes';
 import { productsRoutes } from './products.routes';
 import { reservationsRoutes } from './reservations.routes';
@@ -11,4 +12,5 @@ export const routes: FastifyPluginAsyncZod = async (app) => {
 	await app.register(warehousesRoutes);
 	await app.register(inventoryRoutes);
 	await app.register(reservationsRoutes);
+	await app.register(dashboardRoutes);
 };
