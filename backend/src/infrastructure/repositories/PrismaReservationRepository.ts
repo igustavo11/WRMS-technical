@@ -46,4 +46,19 @@ export class PrismaReservationRepository implements IReservationRepository {
 			where: { status: { in: ['Pending', 'Confirmed'] } },
 		});
 	}
+
+	async countCancelled(): Promise<number> {
+		return this.client.reservation.count({
+			where: { status: 'Cancelled' },
+		});
+	}
+
+	async countCreatedToday(): Promise<number> {
+		const todayStart = new Date();
+		todayStart.setHours(0, 0, 0, 0);
+
+		return this.client.reservation.count({
+			where: { createdAt: { gte: todayStart } },
+		});
+	}
 }

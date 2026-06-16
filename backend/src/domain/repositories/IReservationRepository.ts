@@ -12,4 +12,6 @@ export interface IReservationRepository {
 	create(data: CreateReservationInput): Promise<Reservation>;
 	updateStatus(id: string, status: ReservationStatus): Promise<Reservation>;
 	countActive(): Promise<number>;
+	countCancelled(): Promise<number>;
+	countCreatedToday(): Promise<number>;
 }
