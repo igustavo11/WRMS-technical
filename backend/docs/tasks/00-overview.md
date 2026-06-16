@@ -20,8 +20,8 @@ Each subsystem depends on the ones above it. Build top to bottom.
 | 1 | Domain foundations | [01-domain-foundations.md](./01-domain-foundations.md) | Done | — |
 | 2 | Infrastructure & API skeleton | [02-infrastructure.md](./02-infrastructure.md) | Done | 1 |
 | 3 | Auth | [03-auth.md](./03-auth.md) | Done | 2 |
-| 4 | Products | [04-products.md](./04-products.md) | Planned | 2 |
-| 5 | Warehouses | `05-warehouses.md` | Not started | 2 |
+| 4 | Products | [04-products.md](./04-products.md) | Done | 2 |
+| 5 | Warehouses | [05-warehouses.md](./05-warehouses.md) | Planned | 2 |
 | 6 | Inventory | `06-inventory.md` | Not started | 2, 4, 5 |
 | 7 | Reservations | `07-reservations.md` | Not started | 2, 4, 5, 6 |
 | 8 | Dashboard | `08-dashboard.md` | Not started | 4, 6, 7 |
