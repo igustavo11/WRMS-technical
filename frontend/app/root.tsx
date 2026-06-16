@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
 import {
 	isRouteErrorResponse,
 	Links,
@@ -7,8 +9,11 @@ import {
 	ScrollRestoration,
 } from 'react-router';
 
+import { AuthProvider } from '~/features/auth/context/AuthContext';
 import type { Route } from './+types/root';
 import './app.css';
+
+const queryClient = new QueryClient();
 
 export const links: Route.LinksFunction = () => [
 	{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -42,7 +47,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-	return <Outlet />;
+	return (
+		<QueryClientProvider client={queryClient}>
+			<AuthProvider>
+				<Outlet />
+				<Toaster position="top-right" />
+			</AuthProvider>
+		</QueryClientProvider>
+	);
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
