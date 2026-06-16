@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
 import { authRoutes } from './auth.routes';
 import { inventoryRoutes } from './inventory.routes';
 import { productsRoutes } from './products.routes';
+import { reservationsRoutes } from './reservations.routes';
 import { warehousesRoutes } from './warehouses.routes';
 
 export const routes: FastifyPluginAsyncZod = async (app) => {
@@ -9,4 +10,5 @@ export const routes: FastifyPluginAsyncZod = async (app) => {
 	await app.register(productsRoutes);
 	await app.register(warehousesRoutes);
 	await app.register(inventoryRoutes);
+	await app.register(reservationsRoutes);
 };
