@@ -59,6 +59,8 @@ function buildRepositories(): ReservationRepositories {
 			create: vi.fn(),
 			updateStatus: vi.fn(),
 			countActive: vi.fn(),
+			countCancelled: vi.fn(),
+			countCreatedToday: vi.fn(),
 		},
 	};
 }
