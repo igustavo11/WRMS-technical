@@ -1,3 +1,4 @@
+import fastifyCors from '@fastify/cors';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import {
@@ -17,6 +18,9 @@ export function buildApp() {
 	app.setValidatorCompiler(validatorCompiler);
 	app.setSerializerCompiler(serializerCompiler);
 	app.setErrorHandler(errorHandler);
+	app.register(fastifyCors, {
+		origin: process.env.CORS_ORIGIN as string,
+	});
 
 	app.register(fastifySwagger, {
 		openapi: {

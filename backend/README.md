@@ -779,6 +779,7 @@ Configure these variables in `.env`:
 | `JWT_SECRET` | Secret key for JWT signing |
 | `JWT_EXPIRES_IN` | Token expiration duration (e.g. `7d`) |
 | `PORT` | Server port (default: `3333`) |
+| `CORS_ORIGIN` | Allowed origin for browser requests (frontend dev server, e.g. `http://localhost:5173`) |
 
 ### Run with Docker (database only)
 
