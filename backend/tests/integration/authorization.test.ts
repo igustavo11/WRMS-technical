@@ -38,6 +38,15 @@ describe('authorization', () => {
 		expect(response.status).toBe(403);
 	});
 
+	it('returns 403 for POST /api/warehouses with an Operator token', async () => {
+		const response = await request(app.server)
+			.post('/api/warehouses')
+			.set('Authorization', `Bearer ${operatorToken}`)
+			.send({ name: 'Should not be created', location: 'SP' });
+
+		expect(response.status).toBe(403);
+	});
+
 	it('returns 401 for any route without a token', async () => {
 		const response = await request(app.server).get('/api/products');
 
