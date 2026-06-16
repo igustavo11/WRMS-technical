@@ -1,4 +1,7 @@
-import { hasZodFastifySchemaValidationErrors } from '@fastify/type-provider-zod';
+import {
+	hasZodFastifySchemaValidationErrors,
+	isResponseSerializationError,
+} from '@fastify/type-provider-zod';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { DomainError } from '../../domain/errors/DomainError';
 
@@ -23,6 +26,21 @@ export function errorHandler(
 			error: 'VALIDATION_ERROR',
 			message,
 			statusCode: 400,
+		});
+		return;
+	}
+
+	if (isResponseSerializationError(error)) {
+		request.log.error({
+			issues: error.cause.issues,
+			method: error.method,
+			url: error.url,
+		});
+
+		reply.status(500).send({
+			error: 'INTERNAL_SERVER_ERROR',
+			message: 'An unexpected error occurred.',
+			statusCode: 500,
 		});
 		return;
 	}
