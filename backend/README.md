@@ -14,13 +14,14 @@ built with clean architecture principles, designed for database portability and 
 5. [Transaction Flow (Reservations)](#transaction-flow-reservations)
 6. [Error Handling Pipeline](#error-handling-pipeline)
 7. [Database Swappability](#database-swappability)
-8. [Scaling & Performance](#scaling--performance)
-9. [Trade-offs](#trade-offs)
-10. [Technical Decisions](#technical-decisions)
-11. [Scripts](#scripts)
-12. [Setup](#setup)
-13. [Testing](#testing)
-14. [Future Improvements](#future-improvements)
+8. [MySQL → SQL Server Synchronization (Optional Discussion Topic)](#mysql--sql-server-synchronization-optional-discussion-topic)
+9. [Scaling & Performance](#scaling--performance)
+10. [Trade-offs](#trade-offs)
+11. [Technical Decisions](#technical-decisions)
+12. [Scripts](#scripts)
+13. [Setup](#setup)
+14. [Testing](#testing)
+15. [Future Improvements](#future-improvements)
 
 ---
 
@@ -145,6 +146,9 @@ erDiagram
 - **`RESERVATION.status`** and **`USER.role`** are `String`, not Prisma `enum` — the `sqlserver` connector doesn't support native Prisma enums. Valid values (`Pending`/`Confirmed`/`Cancelled`, `Admin`/`Operator`) are validated via Zod at the API layer.
 - There is no relation between `USER` and `RESERVATION` — the PRD does not associate the authenticated user with the reservation they create; the JWT is only used for authentication/authorization.
 - A missing `INVENTORY` row for a product × warehouse combination is treated as quantity `0` (no pre-created "zero" row).
+- **`USER.passwordHash`** is never serialized in any API response. The login response (and any other
+  user-facing payload) returns only `id`, `email`, and `role` — the hash stays internal to the
+  repository layer and is excluded at the response-schema level, not just by convention.
 
 ---
 
@@ -473,6 +477,59 @@ Zero changes to:
 
 ---
 
+## MySQL → SQL Server Synchronization (Optional Discussion Topic)
+
+> Discussion only, per the assessment's scope — no implementation is included in this repository.
+
+**Scenario**: the company acquires another business whose product catalog lives in a separate MySQL
+database. Both catalogs need to coexist without duplicating SKUs or drifting out of sync.
+
+### 1. Initial migration (one-time)
+
+A batch ETL job:
+
+1. Extract the MySQL product table (`mysqldump` or a direct `SELECT`).
+2. Transform rows into the WRMS `Product` shape (`sku`, `name`, `description`, `isActive`), deduplicating
+   by `sku` — if a SKU already exists in WRMS, the MySQL row updates it instead of creating a duplicate.
+3. Load into SQL Server (Prisma `createMany`/`upsert` for moderate volumes, `BULK INSERT` for large ones).
+4. Each imported row stores the source table's original primary key in a new `externalId` column, so the
+   link back to the MySQL row is never lost.
+
+### 2. Continuous synchronization (ongoing)
+
+Two approaches, in order of preference:
+
+- **CDC (Change Data Capture)** — a connector (e.g. Debezium) reads the MySQL binlog and publishes
+  row-level change events (insert/update/delete) to a message queue (RabbitMQ/Kafka). A consumer service
+  applies those events to SQL Server using the same `externalId`/`sku` rules as the initial migration.
+  Near-real-time, no polling load on the source database.
+- **Polling fallback** — if CDC infrastructure isn't available, a scheduled job queries MySQL for rows
+  where `updatedAt > lastSyncTimestamp` and applies the same upsert logic. Simpler to operate, higher
+  latency, and depends on the source table actually maintaining `updatedAt`.
+
+```mermaid
+graph LR
+    MySQL[("MySQL<br/>(acquired catalog)")] -->|binlog| CDC["CDC connector<br/>(Debezium)"]
+    CDC --> Queue[["Message Queue<br/>(RabbitMQ / Kafka)"]]
+    Queue --> Consumer["Sync consumer"]
+    Consumer -->|"upsert by externalId,<br/>dedupe by sku"| SQLServer[("SQL Server<br/>Product table")]
+```
+
+### 3. Consistency strategy
+
+- **`externalId`** (nullable, unique when present) on `Product` maps each WRMS row back to its MySQL
+  source row. This makes every sync operation an idempotent upsert (`WHERE externalId = ?`) instead of a
+  blind insert — replaying the same event twice has no effect.
+- **`sku`** is the deduplication key *between* the two systems — both already enforce SKU uniqueness
+  internally, so a SKU collision across systems is treated as "the same product" and merged, not
+  duplicated.
+- **Ownership boundary**: rows with `externalId IS NOT NULL` are owned by MySQL (sync is one-directional,
+  MySQL → SQL Server); WRMS-native rows (`externalId IS NULL`) are never touched by the sync job. This
+  avoids two-way conflict resolution for the scope of this discussion — if the catalogs eventually need
+  to merge into one system of record, that's a separate migration, not an ongoing sync concern.
+
+---
+
 ## Scaling & Performance
 
 ### Stateless architecture
@@ -584,6 +641,29 @@ They are not mocked.
 **Benefit**: tests actually verify SQL queries, constraints, and transaction behavior. The
 unit tests (use cases) are mocked and fast — the integration tests cover the real integration
 points.
+
+### `GET /api/warehouses` opened to Operator
+
+The PRD's first-pass permission table scoped every warehouse endpoint to Admin only. In practice,
+the reservation form — used by both Admin and Operator — needs to populate a warehouse dropdown.
+
+**Decision**: `GET /api/warehouses` is open to both roles; `POST /api/warehouses` stays Admin-only.
+
+**Cost**: Operator gets read access to warehouse data (name, location, active status) that the
+original spec scoped to Admin only.
+**Benefit**: the reservation form works without inventing a second, redundant endpoint just to
+list warehouse names for a dropdown.
+
+### No public user registration
+
+There is no `POST /api/auth/register` endpoint. Users (Admin and Operator) are created exclusively
+via the Prisma seed script.
+
+**Cost**: onboarding a new user requires direct database/seed access — there's no self-service
+signup flow.
+**Benefit**: this is an internal operational tool, not a public-facing product — every user is a
+known, vetted employee. Skipping registration removes a whole surface (email verification,
+password policy, account recovery) that has no real use case here.
 
 ---
 

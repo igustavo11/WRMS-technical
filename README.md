@@ -56,7 +56,8 @@ then test every endpoint interactively.
 
 ### Auth (public)
 
-`POST /api/auth/login` — authenticate and receive a JWT token
+`POST /api/auth/login` — authenticate and receive a JWT token. The response never includes
+`passwordHash` — only `id`, `email`, and `role`.
 
 ### Products (Admin only)
 
@@ -196,6 +197,19 @@ See the [backend README](./backend/README.md#trade-offs) for the full breakdown 
 - Serializable isolation (correctness over throughput)
 - User not linked to reservation (PRD scope)
 - No cache (stock consistency critical)
+- `GET /api/warehouses` opened to Operator (the reservation form needs the dropdown)
+- No public registration endpoint (seed-only users — internal tool, not a public product)
+
+---
+
+## MySQL → SQL Server (Optional Discussion Topic)
+
+The assessment includes an optional discussion: if the company acquired another business whose
+product catalog lives in MySQL, how would product data be synchronized and kept consistent? No
+implementation is included — see the
+[backend README](./backend/README.md#mysql--sql-server-synchronization-optional-discussion-topic)
+for the full breakdown: one-time ETL migration, CDC-based continuous sync, and `externalId` + `sku`
+as the consistency keys between the two systems.
 
 ---
 
