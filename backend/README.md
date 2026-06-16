@@ -12,7 +12,7 @@ Warehouse Reservation Management System backend.
 | Database   | SQL Server 2022 (Docker) |
 | Auth       | JWT (HS256)              |
 | Validation | Zod                      |
-| Tests      | Bun test                 |
+| Tests      | Vitest + Supertest       |
 
 ---
 
@@ -24,7 +24,8 @@ bun run start        # start
 bun run lint         # lint & fix (Biome)
 bun run format       # format (Biome)
 bun run check        # lint + format + organize imports (Biome)
-bun test             # run tests
+bun run test         # run tests (Vitest)
+bun run test:watch   # run tests in watch mode
 bunx prisma db push  # sync schema to database
 bunx prisma db seed  # seed database
 bunx prisma studio   # open Prisma Studio
@@ -211,8 +212,10 @@ The original spec considered .NET, but Node.js was chosen for:
 ## Testing
 
 ```bash
-bun test
+bun run test
 ```
+
+Integration tests run against a separate `wrms_test` database (see `.env.test`), kept in sync automatically via Vitest's global setup.
 
 ---
 
