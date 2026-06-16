@@ -14,7 +14,7 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 |---|---|
 | Runtime | Bun |
 | Backend | Fastify 5 |
-| Frontend | React + shadcn/ui + Vite |
+| Frontend | React + shadcn/ui + Tailwind CSS v4 + Vite |
 | ORM | Prisma 7 (adapter-based, swappable) |
 | Database | SQL Server 2022 (Docker) — swappable to MySQL/PG |
 | Auth | JWT (HS256) |
