@@ -9,6 +9,7 @@ import {
 } from '@fastify/type-provider-zod';
 import Fastify from 'fastify';
 import { errorHandler } from './api/middlewares/errorHandler';
+import { routes } from './api/routes';
 
 export function buildApp() {
 	const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
@@ -55,6 +56,8 @@ export function buildApp() {
 	app.register(fastifySwaggerUi, {
 		routePrefix: '/documentation',
 	});
+
+	app.register(routes, { prefix: '/api' });
 
 	return app;
 }
