@@ -60,7 +60,7 @@ This starts SQL Server on port 1433. Wait until you see `SQL Server is now ready
 bun install
 bunx prisma db push
 bunx prisma db seed
-bun --hot index.ts
+bun --hot src/server.ts
 ```
 
 The server starts at `http://localhost:3333`.
