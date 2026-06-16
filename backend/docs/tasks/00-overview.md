@@ -21,8 +21,8 @@ Each subsystem depends on the ones above it. Build top to bottom.
 | 2 | Infrastructure & API skeleton | [02-infrastructure.md](./02-infrastructure.md) | Done | 1 |
 | 3 | Auth | [03-auth.md](./03-auth.md) | Done | 2 |
 | 4 | Products | [04-products.md](./04-products.md) | Done | 2 |
-| 5 | Warehouses | [05-warehouses.md](./05-warehouses.md) | Planned | 2 |
-| 6 | Inventory | `06-inventory.md` | Not started | 2, 4, 5 |
+| 5 | Warehouses | [05-warehouses.md](./05-warehouses.md) | Done | 2 |
+| 6 | Inventory | [06-inventory.md](./06-inventory.md) | Planned | 2, 4, 5 |
 | 7 | Reservations | `07-reservations.md` | Not started | 2, 4, 5, 6 |
 | 8 | Dashboard | `08-dashboard.md` | Not started | 4, 6, 7 |
 | 9 | Seed data | `09-seed.md` | Not started | 1 (schema already exists) |
