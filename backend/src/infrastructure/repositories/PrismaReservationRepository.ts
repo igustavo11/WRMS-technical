@@ -6,21 +6,25 @@ import type {
 	CreateReservationInput,
 	IReservationRepository,
 } from '../../domain/repositories/IReservationRepository';
-import { prisma } from '../database/prisma';
+import { type PrismaClientOrTransaction, prisma } from '../database/prisma';
 
 export class PrismaReservationRepository implements IReservationRepository {
+	constructor(private readonly client: PrismaClientOrTransaction = prisma) {}
+
 	async findById(id: string): Promise<Reservation | null> {
-		const reservation = await prisma.reservation.findUnique({ where: { id } });
+		const reservation = await this.client.reservation.findUnique({
+			where: { id },
+		});
 		return reservation as Reservation | null;
 	}
 
 	async findAll(): Promise<Reservation[]> {
-		const reservations = await prisma.reservation.findMany();
+		const reservations = await this.client.reservation.findMany();
 		return reservations as Reservation[];
 	}
 
 	async create(data: CreateReservationInput): Promise<Reservation> {
-		const reservation = await prisma.reservation.create({
+		const reservation = await this.client.reservation.create({
 			data: { ...data, status: 'Pending' },
 		});
 		return reservation as Reservation;
@@ -30,7 +34,7 @@ export class PrismaReservationRepository implements IReservationRepository {
 		id: string,
 		status: ReservationStatus,
 	): Promise<Reservation> {
-		const reservation = await prisma.reservation.update({
+		const reservation = await this.client.reservation.update({
 			where: { id },
 			data: { status },
 		});
@@ -38,7 +42,7 @@ export class PrismaReservationRepository implements IReservationRepository {
 	}
 
 	async countActive(): Promise<number> {
-		return prisma.reservation.count({
+		return this.client.reservation.count({
 			where: { status: { in: ['Pending', 'Confirmed'] } },
 		});
 	}

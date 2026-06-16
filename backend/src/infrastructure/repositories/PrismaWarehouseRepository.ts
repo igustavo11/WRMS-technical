@@ -3,18 +3,20 @@ import type {
 	CreateWarehouseInput,
 	IWarehouseRepository,
 } from '../../domain/repositories/IWarehouseRepository';
-import { prisma } from '../database/prisma';
+import { type PrismaClientOrTransaction, prisma } from '../database/prisma';
 
 export class PrismaWarehouseRepository implements IWarehouseRepository {
+	constructor(private readonly client: PrismaClientOrTransaction = prisma) {}
+
 	async findById(id: string): Promise<Warehouse | null> {
-		return prisma.warehouse.findUnique({ where: { id } });
+		return this.client.warehouse.findUnique({ where: { id } });
 	}
 
 	async findAll(): Promise<Warehouse[]> {
-		return prisma.warehouse.findMany();
+		return this.client.warehouse.findMany();
 	}
 
 	async create(data: CreateWarehouseInput): Promise<Warehouse> {
-		return prisma.warehouse.create({ data });
+		return this.client.warehouse.create({ data });
 	}
 }
