@@ -77,8 +77,8 @@ This starts SQL Server + backend + frontend.
 
 | Role     | Email             | Password     |
 | -------- | ----------------- | ------------ |
-| Admin    | admin@wrms.com    | Admin@123    |
-| Operator | operator@wrms.com | Operator@123 |
+| Admin    | admin@wtec.com    | Admin@123    |
+| Operator | operator@wtec.com | Operator@123 |
 
 ---
 
