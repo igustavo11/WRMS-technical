@@ -47,6 +47,15 @@ describe('authorization', () => {
 		expect(response.status).toBe(403);
 	});
 
+	it('returns 403 for PUT /api/inventory with an Operator token', async () => {
+		const response = await request(app.server)
+			.put('/api/inventory')
+			.set('Authorization', `Bearer ${operatorToken}`)
+			.send({ productId: randomUUID(), warehouseId: randomUUID(), quantity: 10 });
+
+		expect(response.status).toBe(403);
+	});
+
 	it('returns 401 for any route without a token', async () => {
 		const response = await request(app.server).get('/api/products');
 
