@@ -1,229 +1,182 @@
 # WRMS — Warehouse Reservation Management System
 
-A full-stack warehouse management application for tracking inventory and managing reservations across multiple warehouses. Built with TypeScript end-to-end, using Node.js + Fastify on the backend and React on the frontend.
+A full-stack warehouse management application for tracking inventory and managing product
+reservations across multiple warehouses. Built with TypeScript end-to-end.
+
+> **Deep dive into architecture, scaling, DB swappability, and trade-offs →**
+> [`backend/README.md`](./backend/README.md)
+
+---
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
-| **Backend runtime** | Node.js + Bun |
-| **Backend framework** | Fastify 5 |
-| **Frontend** | React + TypeScript + Vite |
-| **UI library** | shadcn/ui |
-| **ORM** | Prisma 7 |
-| **Database** | SQL Server 2022 (Docker) |
-| **Auth** | JWT (HS256) |
-| **Validation** | Zod 4 |
-| **Backend tests** | Vitest + Supertest |
-| **Frontend tests** | Vitest + React Testing Library |
-| **Linting** | Biome |
-| **AI harness** | Claude Code |
-| **Infrastructure** | Docker + Docker Compose |
+| Runtime | Bun |
+| Backend | Fastify 5 |
+| Frontend | React + shadcn/ui + Vite |
+| ORM | Prisma 7 (adapter-based, swappable) |
+| Database | SQL Server 2022 (Docker) — swappable to MySQL/PG |
+| Auth | JWT (HS256) |
+| Validation | Zod 4 |
+| Tests | Vitest + Supertest |
+| Linting | Biome |
+
+---
+
+## Quick Start
+
+```bash
+docker compose up -d                    # start SQL Server
+cd backend && cp .env.example .env
+bun install && bunx prisma db push && bun run dev   # API at :3333
+cd frontend && cp .env.example .env
+npm install && npm run dev              # UI at :5173
+```
+
+### Seed users
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@wtec.com | 123456 |
+| Operator | operator@wtec.com | 123456 |
+
+---
+
+## API
+
+The API has **13 endpoints** across 6 modules. Full OpenAPI 3.0.3 spec available at:
+
+```
+http://localhost:3333/documentation
+```
+
+Click **Authorize** (lock icon), paste a JWT token from `POST /api/auth/login`,
+then test every endpoint interactively.
+
+### Auth (public)
+
+`POST /api/auth/login` — authenticate and receive a JWT token
+
+### Products (Admin only)
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/products` | List all products |
+| `GET /api/products/:id` | Get product by ID |
+| `POST /api/products` | Create a product (unique SKU required) |
+| `PUT /api/products/:id` | Update product name, description, or active status |
+
+### Warehouses
+
+| Endpoint | Description | Roles |
+|---|---|---|
+| `GET /api/warehouses` | List all warehouses | Admin, Operator |
+| `POST /api/warehouses` | Create a warehouse | Admin |
+
+### Inventory
+
+| Endpoint | Description | Roles |
+|---|---|---|
+| `GET /api/inventory` | List stock levels across all warehouses | Admin, Operator |
+| `PUT /api/inventory` | Set absolute stock quantity for a product×warehouse pair | Admin |
+
+### Reservations
+
+| Endpoint | Description | Roles |
+|---|---|---|
+| `GET /api/reservations` | Full reservation history | Admin, Operator |
+| `POST /api/reservations` | Reserve stock (debits inventory, validates active product/warehouse + stock) | Admin, Operator |
+| `PUT /api/reservations/:id/cancel` | Cancel a reservation (restores stock) | Admin, Operator |
+
+### Dashboard
+
+| Endpoint | Description | Roles |
+|---|---|---|
+| `GET /api/dashboard` | Metrics + low-stock alerts + recent reservations + per-warehouse breakdown | Admin, Operator |
+
+All error responses follow the same format:
+
+```json
+{
+  "error": "ERROR_CODE",
+  "message": "Human-readable description.",
+  "statusCode": 422
+}
+```
+
+---
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────┐
-│                   Frontend                       │
-│  React + shadcn/ui + React Query + React Hook Form│
-│  JWT stored in localStorage, injected via Axios   │
-└────────────────────┬─────────────────────────────┘
-                     │ HTTP (JSON)
-                     ▼
-┌──────────────────────────────────────────────────┐
-│                  Backend API                      │
-│  Fastify → authenticate → authorize → use case   │
-│  Zod validation → DomainError → errorHandler     │
-└────────────────────┬─────────────────────────────┘
-                     │ Prisma Client
-                     ▼
-┌──────────────────────────────────────────────────┐
-│               SQL Server 2022                     │
-│  tables: users, products, warehouses,            │
-│         inventories, reservations                │
-└──────────────────────────────────────────────────┘
+Frontend (React) ──HTTP/JSON──► Backend API (Fastify)
+                                   │
+                          ┌────────┴────────┐
+                          │  Clean Architecture  │
+                          │  Domain → App → Infra│
+                          └────────┬────────┘
+                                   │ Prisma Client
+                                   ▼
+                          SQL Server 2022
+                          (swappable to MySQL/PG)
 ```
 
-### Backend Layers
+The backend uses **clean architecture** with strict layer separation. The domain layer is
+pure TypeScript with zero framework imports — repository interfaces are contracts implemented
+by Prisma in the infrastructure layer. This makes the database swappable: change the Prisma
+adapter (`PrismaMssql` → `PrismaMysql` / `PrismaPg`) and connection string, and the system
+works with a different database. No business logic changes needed.
 
-| Layer | Responsibility |
-|---|---|
-| **Domain** | Entities, repository interfaces, typed errors |
-| **Application** | Use cases orchestrating business rules |
-| **Infrastructure** | Prisma client, repository implementations, JWT service |
-| **API** | Fastify routes, middlewares, Zod schemas |
+---
 
-See the full [backend architecture docs](./backend/README.md#architecture) for details.
+## End-to-End Flow (Reservation Example)
 
-## Why Node.js?
+1. User logs in → `POST /api/auth/login` → receives JWT
+2. User selects a product and warehouse → `POST /api/reservations`
+3. Server validates:
+   - Body schema via Zod (400 if invalid)
+   - JWT via authenticate middleware (401 if missing/invalid)
+   - Role via authorize middleware (403 if wrong role)
+   - Product exists and is active
+   - Warehouse exists and is active
+   - Sufficient stock in the product×warehouse inventory
+4. If all checks pass: stock is debited, reservation created (status: `Pending`), response 201
+5. User can cancel → `PUT /api/reservations/:id/cancel` → stock restored, status → `Cancelled`
 
-The original spec considered .NET, but Node.js was chosen for:
+Concurrent reservation attempts on the same inventory use **Serializable transactions** with
+automatic retry on write conflict — guaranteeing no oversell.
 
-- **Unified language** — TypeScript across frontend and backend reduces context switching
-- **Development velocity** — Faster iteration for a CRUD-heavy application
-- **Ecosystem maturity** — Excellent tooling for JSON APIs (Fastify, Zod, Prisma)
-- **Client authorization** — This decision was explicitly approved via email
-
-## Why Claude Code as the Development Harness?
-
-This project was built using **Claude Code** as the primary AI-assisted development environment. This choice was intentional:
-
-- **Agentic workflows** — Claude Code can execute multi-step tasks (scaffolding, testing, refactoring) autonomously, not just generate snippets
-- **Tool access** — Direct filesystem, terminal, and browser interaction from within the conversation
-- **Skill system** — Reusable, version-controlled instruction sets that enforce disciplined workflows
-
-### Skills Used
-
-| Skill | Purpose |
-|---|---|
-| **grill-me** | Stress-test architectural decisions before implementation. Used to validate the domain model, transaction strategy, and role-based permission design against the PRD. |
-| **superpowers** | Meta-skill that ensures all relevant skills are discovered and loaded before any response. Enforces the discipline of checking for applicable skills on every task. |
-| **context7** | Real-time documentation lookup for libraries (Prisma, Fastify, Zod). Ensures code references current API docs rather than training-cutoff knowledge. |
-| **TDD** | Red-green-refactor loop for all use cases. Tests were written before implementation code for every business rule. |
-| **writing-plans** | Structured implementation plans broken into sequential subsystems before touching code. |
-| **requesting-code-review** | Verification pass before marking work complete — checks tests, linting, type errors, and regressions. |
-
-### Workflow
-
-1. **PRD analysis** → Breaking down requirements into entities, rules, and endpoints
-2. **Skill invocation** → Loading the appropriate skill before each task
-3. **Context7 research** → Looking up current library docs for Prisma + SQL Server, Fastify patterns, etc.
-4. **Grill-me sessions** → Stress-testing design decisions against the PRD before implementation
-5. **TDD loop** → Writing test → confirming it fails → implementing → confirming it passes
-6. **Code review** → Verification pass ensuring tests, linting, and types are all green
-
-## Repository Structure
-
-```
-wrms/
-├── backend/               # Node.js + Fastify + Prisma
-│   ├── src/
-│   │   ├── domain/        # Entities, repository interfaces, errors
-│   │   ├── application/   # Use cases
-│   │   ├── infrastructure/# Prisma client, repos, JWT
-│   │   └── api/           # Routes, middlewares, validators
-│   ├── prisma/            # Schema, migrations, seed
-│   ├── tests/             # Unit + integration tests
-│   └── docs/              # Database schema, task plans
-├── frontend/              # React + Vite + shadcn/ui
-│   └── src/
-│       ├── contexts/      # AuthContext
-│       ├── hooks/         # React Query hooks
-│       ├── services/      # API client (Axios)
-│       ├── pages/         # Route pages
-│       └── components/    # UI components
-└── docker-compose.yml     # SQL Server service
-```
-
-## Quick Start
-
-### Prerequisites
-
-- [Bun](https://bun.sh) 1.3+
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Node.js](https://nodejs.org/) 20+
-
-### 1. Start the database
-
-```bash
-docker compose up -d
-```
-
-This starts SQL Server 2022 on port 1433.
-
-### 2. Backend setup
-
-```bash
-cd backend
-cp .env.example .env
-bun install
-bunx prisma db push
-bun run dev
-```
-
-The API starts at `http://localhost:3333`.
-
-### 3. Frontend setup
-
-```bash
-cd frontend
-cp .env.example .env
-npm install
-npm run dev
-```
-
-The app opens at `http://localhost:5173`.
-
-### 4. Seed credentials
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@wrms.com | Admin@123 |
-| Operator | operator@wrms.com | Operator@123 |
-
-### Run everything with Docker
-
-```bash
-docker compose --profile full up --build
-```
-
-## API Overview
-
-Full API reference in the [backend README](./backend/README.md#api).
-
-| Endpoint | Description | Roles |
-|---|---|---|
-| `POST /api/auth/login` | Login | Public |
-| `GET /api/products` | List products | Admin |
-| `POST /api/products` | Create product | Admin |
-| `PUT /api/products/:id` | Update product | Admin |
-| `POST /api/warehouses` | Create warehouse | Admin |
-| `GET /api/inventory` | List inventory | Admin, Operator |
-| `PUT /api/inventory` | Adjust inventory | Admin |
-| `POST /api/reservations` | Create reservation | Admin, Operator |
-| `PUT /api/reservations/:id/cancel` | Cancel reservation | Admin, Operator |
-| `GET /api/dashboard` | Dashboard totals | Admin, Operator |
-
-## Design
-
-Frontend UI reference: **[Figma — WRMS Design](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1)** 
-
-The design follows the shadcn/ui component library with a clean, functional layout. See the [backend docs](./backend/docs/database-schema.md) for the data model behind the UI.
+---
 
 ## Documentation
 
-| Resource | Description |
+| Resource | What you'll find |
 |---|---|
-| [Backend README](./backend/README.md) | Stack, setup, API, architecture, assumptions |
-| [Database Schema](./backend/docs/database-schema.md) | ER diagram and modeling notes |
-| [Task Plans](./backend/docs/tasks/) | Implementation breakdown by subsystem |
-| [Backend CLAUDE.md](./backend/CLAUDE.md) | Agent instructions for backend development |
+| [`backend/README.md`](./backend/README.md) | Full system design, 4 Mermaid diagrams, scaling, DB swappability, trade-offs, setup |
+| [`frontend/docs/api-contract.md`](./frontend/docs/api-contract.md) | Complete API contract with curl examples, schemas, seed data |
+| [`backend/docs/database-schema.md`](./backend/docs/database-schema.md) | ER diagram and modeling notes |
+| `http://localhost:3333/documentation` | Interactive Swagger UI (try endpoints live) |
+| [Figma Design](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1) | UI reference |
 
-## Assumptions and Trade-offs
+---
 
-- **GET /api/warehouses allowed for Operator** — The reservation form needs to list warehouses. A conscious trade-off documented in the backend README.
-- **No public user registration** — Internal system. Users are created only via seed.
-- **No pagination** — Acceptable for the test scope. Would add with more time.
-- **No refresh token** — Simple JWT with 7-day expiration. Sufficient for the test scope.
-- **No caching** — Stock consistency is critical. Transactions solve concurrency; caching would add stale-data risk.
-- **Prisma enums not used** — SQL Server doesn't support Prisma native enums, so role and status are stored as `String` and validated via Zod.
+## Assumptions & Trade-offs (summary)
 
-## Future Improvements
+See the [backend README](./backend/README.md#trade-offs) for the full breakdown with cost/benefit analysis.
 
-- Pagination and filters on list endpoints
-- Refresh token + blacklist for revoked tokens
-- Reservation confirmation (Pending → Confirmed) by Admin
-- Real-time notifications (WebSocket) for operators
-- Stock movement reports
+- String roles/enums (SQL Server constraint)
+- No refresh token (internal system)
+- No pagination (scope-appropriate)
+- No WebSocket (polling is sufficient)
+- Serializable isolation (correctness over throughput)
+- User not linked to reservation (PRD scope)
+- No cache (stock consistency critical)
+
+---
 
 ## AI Usage
 
-Claude Code was used as the primary development harness for this project. Specific uses include:
-
-- **Architecture planning** — Domain modeling, layer design, transaction strategy
-- **Scaffold generation** — Use cases, repositories, routes, middleware
-- **Business rule review** — Validation against PRD via grill-me sessions
-- **Documentation research** — Library API lookup via Context7 (Prisma, Fastify, Zod)
-- **Test suggestion** — Edge case identification for TDD
-
-All engineering decisions, final implementation, and code review were performed by the developer.
+Claude Code was used as the primary development harness for architecture planning,
+scaffolding, business rule review, documentation research (Context7), and test suggestions.
+All engineering decisions, implementation, and code review were performed by the developer.
