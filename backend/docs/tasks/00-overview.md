@@ -17,9 +17,9 @@ Each subsystem depends on the ones above it. Build top to bottom.
 
 | # | Subsystem | File | Status | Depends on |
 |---|-----------|------|--------|-------------|
-| 1 | Domain foundations | [01-domain-foundations.md](./01-domain-foundations.md) | In progress | — |
-| 2 | Infrastructure & API skeleton | [02-infrastructure.md](./02-infrastructure.md) | In progress | 1 |
-| 3 | Auth | `03-auth.md` | Not started | 2 |
+| 1 | Domain foundations | [01-domain-foundations.md](./01-domain-foundations.md) | Done | — |
+| 2 | Infrastructure & API skeleton | [02-infrastructure.md](./02-infrastructure.md) | Done | 1 |
+| 3 | Auth | [03-auth.md](./03-auth.md) | Planned | 2 |
 | 4 | Products | `04-products.md` | Not started | 2 |
 | 5 | Warehouses | `05-warehouses.md` | Not started | 2 |
 | 6 | Inventory | `06-inventory.md` | Not started | 2, 4, 5 |
