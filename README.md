@@ -109,17 +109,41 @@ All error responses follow the same format:
 
 ## Architecture
 
-```
-Frontend (React) ──HTTP/JSON──► Backend API (Fastify)
-                                   │
-                          ┌────────┴────────┐
-                          │  Clean Architecture  │
-                          │  Domain → App → Infra│
-                          └────────┬────────┘
-                                   │ Prisma Client
-                                   ▼
-                          SQL Server 2022
-                          (swappable to MySQL/PG)
+```mermaid
+graph TB
+    subgraph Frontend["Frontend (React + shadcn/ui)"]
+        UI["Pages & Components"]
+        API_Client["API Client (Axios)"]
+        UI --> API_Client
+    end
+
+    subgraph Backend["Backend API (Fastify)"]
+        Routes["Routes<br/>Zod validation"]
+        Middlewares["Middlewares<br/>authenticate / authorize"]
+        UseCases["Use Cases<br/>Business rules"]
+        Routes --> Middlewares --> UseCases
+    end
+
+    subgraph Domain["Domain Layer (pure TS)"]
+        Entities["Entities"]
+        Repos["Repository Interfaces"]
+        Errors["Domain Errors"]
+    end
+
+    subgraph Infrastructure["Infrastructure Layer"]
+        PrismaRepos["Prisma Repositories"]
+        PrismaClient["Prisma Client"]
+        JWT["JWT Service"]
+    end
+
+    API_Client -->|"HTTP / JSON"| Routes
+    UseCases --> Entities
+    UseCases --> Errors
+    UseCases --> Repos
+    Repos -.->|"implemented by"| PrismaRepos
+    PrismaRepos --> PrismaClient
+    PrismaClient --> DB[("SQL Server 2022<br/>(or MySQL / PG)")]
+    Middlewares --> JWT
 ```
 
 The backend uses **clean architecture** with strict layer separation. The domain layer is
