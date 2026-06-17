@@ -74,6 +74,10 @@ export function LoginPage() {
 				<div className="relative w-full max-w-[448px] overflow-hidden rounded-lg border border-border bg-card p-[33px] shadow-2xl">
 					<div className="absolute inset-x-0 top-0 h-1 bg-primary" />
 
+					<div className="mb-6 flex justify-center lg:hidden">
+						<img src="/wtec-logo.svg" alt="WTEC" className="h-10" />
+					</div>
+
 					<div className="flex flex-col gap-2">
 						<h1 className="text-3xl font-bold text-foreground">
 							Entrar na sua conta
