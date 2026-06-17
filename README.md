@@ -77,6 +77,42 @@ bun install && bun run dev
 
 ---
 
+## Testing
+
+### Local (host)
+
+```bash
+# Terminal 2 — Backend (with db running)
+cd backend && bun run test
+
+# Terminal 3 — Frontend
+cd frontend && bun run test
+```
+
+Exit code is non-zero if any test fails. Use `--watch` to re-run on changes:
+```bash
+bun run test:watch
+```
+
+### Containerized (for CI / pre-deploy)
+
+Run the full backend test suite inside the backend image against the Dockerized SQL Server:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.test.yml run --rm --build backend-test
+```
+
+This step:
+- Creates an isolated `wrms_test` database
+- Installs Node.js (required for Vitest fork workers)
+- Resets the schema (clean state between runs)
+- Runs tests serially (shared DB, global assertions)
+- Propagates exit code (0 = all pass, non-zero = failure)
+
+Safe for CI gates. Does not touch the production database.
+
+---
+
 ## API
 
 **13 endpoints** across 6 modules. Interactive OpenAPI 3.0.3 spec at `http://localhost:3334/documentation`.
