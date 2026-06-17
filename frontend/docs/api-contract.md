@@ -139,7 +139,7 @@ The JWT token is obtained via `POST /auth/login` and contains:
 
 ### `GET /api/products` — List all products
 
-**Auth:** `Admin`  
+**Auth:** `Admin` | `Operator`  
 **Response:** `200 OK`
 
 ```json
@@ -170,7 +170,7 @@ curl -H "Authorization: Bearer <token>" http://localhost:3333/api/products
 
 ### `GET /api/products/:id` — Get product by ID
 
-**Auth:** `Admin`  
+**Auth:** `Admin` | `Operator`  
 **Params:** `id` (uuid — path param)  
 **Response:** `200 OK`
 
