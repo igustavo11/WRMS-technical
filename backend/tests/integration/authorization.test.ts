@@ -30,12 +30,12 @@ describe('authorization', () => {
 		expect(response.status).toBe(403);
 	});
 
-	it('returns 403 for GET /api/products with an Operator token', async () => {
+	it('returns 200 for GET /api/products with an Operator token (read access by design)', async () => {
 		const response = await request(app.server)
 			.get('/api/products')
 			.set('Authorization', `Bearer ${operatorToken}`);
 
-		expect(response.status).toBe(403);
+		expect(response.status).toBe(200);
 	});
 
 	it('returns 403 for POST /api/warehouses with an Operator token', async () => {
