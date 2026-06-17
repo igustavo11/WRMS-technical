@@ -6,14 +6,13 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 > **Deep dive into architecture, scaling, DB swappability, and trade-offs →**
 > [`backend/README.md`](./backend/README.md)
 
----
+<p align="center">
+  <img src="./docs/figma.jpeg" alt="WRMS — Figma Design Reference" width="700">
+</p>
 
-> ### 🎨 Design System
->
-> The UI is built pixel-by-pixel from the [Figma reference](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1)
-> — a custom dark theme with exact Figma hex values (`#1CC8A8` primary, `#131313` background, `#161616` cards)
-> implemented in Tailwind CSS v4 + shadcn/ui owned components. Every color token, spacing, and border radius
-> matches the design spec, not framework defaults.
+> Built pixel-by-pixel from the [Figma reference](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1) —
+> custom dark theme with exact Figma hex values (`#1CC8A8` primary, `#131313` background, `#161616` cards)
+> implemented in Tailwind CSS v4 + shadcn/ui.
 
 ---
 
@@ -22,8 +21,8 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 | Layer | Technology |
 |---|---|---|
 | Runtime | Bun |
-| Backend | Fastify 5 — [see backend README](./backend/README.md) |
-| Frontend | React + shadcn/ui (custom) + Tailwind CSS v4 + Vite — [see frontend README](./frontend/README.md) |
+| Backend | Fastify 5 — [detalhes](./backend/README.md) |
+| Frontend | React + shadcn/ui (custom) + Tailwind CSS v4 + Vite — [detalhes](./frontend/README.md) |
 | ORM | Prisma 7 (adapter-based, swappable) |
 | Database | SQL Server 2022 (Docker) — swappable to MySQL/PG |
 | Auth | JWT (HS256) |
@@ -41,14 +40,16 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 docker compose up --build
 ```
 
-This starts all three services:
-- **Frontend** → `http://localhost:8085`
-- **Backend API** → `http://localhost:3334`
-- **SQL Server** → `localhost:1433`
+| Service | URL |
+|---------|-----|
+| Frontend | `http://localhost:8085` |
+| Backend API | `http://localhost:3334` |
+| Swagger UI | `http://localhost:3334/documentation` |
+| SQL Server | `localhost:1433` |
 
-The entrypoint automatically creates the database, runs migrations, and seeds test data.
+The entrypoint creates the database, runs migrations, and seeds data automatically.
 
-### Run locally (development)
+### Local development
 
 ```bash
 # Terminal 1 — SQL Server
@@ -57,18 +58,16 @@ docker compose up -d db
 # Terminal 2 — Backend
 cd backend && cp .env.example .env
 bun install && bunx prisma db push && bunx prisma db seed && bun run dev
-# → http://localhost:3333
 
 # Terminal 3 — Frontend
 cd frontend && cp .env.example .env
 bun install && bun run dev
-# → http://localhost:5173
 ```
 
-### Seed credentials
+### Credenciais de seed
 
 | Role | Email | Password |
-|------|-------|----------|
+|-------|-------|-------|
 | Admin | admin@wtec.com | Admin@123 |
 | Operator | operator@wtec.com | Operator@123 |
 
@@ -76,70 +75,20 @@ bun install && bun run dev
 
 ## API
 
-The API has **13 endpoints** across 6 modules. Full OpenAPI 3.0.3 spec available at:
+**13 endpoints** across 6 modules. Interactive OpenAPI 3.0.3 spec at `http://localhost:3334/documentation`.
 
-```
-http://localhost:3333/documentation
-```
-
-Click **Authorize** (lock icon), paste a JWT token from `POST /api/auth/login`,
-then test every endpoint interactively.
-
-### Auth (public)
-
-`POST /api/auth/login` — authenticate and receive a JWT token. The response never includes
-`passwordHash` — only `id`, `email`, and `role`.
-
-### Products (Admin only)
-
-| Endpoint | Description |
-|---|---|
-| `GET /api/products` | List all products |
-| `GET /api/products/:id` | Get product by ID |
-| `POST /api/products` | Create a product (unique SKU required) |
-| `PUT /api/products/:id` | Update product name, description, or active status |
-
-### Warehouses
-
-| Endpoint | Description | Roles |
-|---|---|---|
-| `GET /api/warehouses` | List all warehouses | Admin, Operator |
-| `POST /api/warehouses` | Create a warehouse | Admin |
-
-### Inventory
-
-| Endpoint | Description | Roles |
-|---|---|---|
-| `GET /api/inventory` | List stock levels across all warehouses | Admin, Operator |
-| `PUT /api/inventory` | Set absolute stock quantity for a product×warehouse pair | Admin |
-
-### Reservations
-
-| Endpoint | Description | Roles |
-|---|---|---|
-| `GET /api/reservations` | Full reservation history | Admin, Operator |
-| `POST /api/reservations` | Reserve stock (debits inventory, validates active product/warehouse + stock) | Admin, Operator |
-| `PUT /api/reservations/:id/cancel` | Cancel a reservation (restores stock) | Admin, Operator |
-
-### Dashboard
-
-| Endpoint | Description | Roles |
-|---|---|---|
-| `GET /api/dashboard` | Metrics + low-stock alerts + recent reservations + per-warehouse breakdown | Admin, Operator |
-
-All error responses follow the same format:
-
-```json
-{
-  "error": "ERROR_CODE",
-  "message": "Human-readable description.",
-  "statusCode": 422
-}
-```
+| Module | Endpoints | Roles |
+|--------|-----------|-------|
+| Auth | `POST /api/auth/login` | Public |
+| Products | `GET`, `POST`, `PUT` | Admin |
+| Warehouses | `GET`, `POST` | Admin (GET open to Operator) |
+| Inventory | `GET`, `PUT` | Admin + Operator |
+| Reservations | `GET`, `POST`, `PUT /:id/cancel` | Admin + Operator |
+| Dashboard | `GET /api/dashboard` | Admin + Operator |
 
 ---
 
-## Architecture
+## Arquitetura
 
 ```mermaid
 graph TB
@@ -150,9 +99,9 @@ graph TB
     end
 
     subgraph Backend["Backend API (Fastify)"]
-        Routes["Routes<br/>Zod validation"]
-        Middlewares["Middlewares<br/>authenticate / authorize"]
-        UseCases["Use Cases<br/>Business rules"]
+        Routes["Routes / Zod validation"]
+        Middlewares["authenticate / authorize"]
+        UseCases["Use Cases / Business rules"]
         Routes --> Middlewares --> UseCases
     end
 
@@ -178,75 +127,26 @@ graph TB
     Middlewares --> JWT
 ```
 
-The backend uses **clean architecture** with strict layer separation. The domain layer is
-pure TypeScript with zero framework imports — repository interfaces are contracts implemented
-by Prisma in the infrastructure layer. This makes the database swappable: change the Prisma
-adapter (`PrismaMssql` → `PrismaMysql` / `PrismaPg`) and connection string, and the system
-works with a different database. No business logic changes needed.
-
----
-
-## End-to-End Flow (Reservation Example)
-
-1. User logs in → `POST /api/auth/login` → receives JWT
-2. User selects a product and warehouse → `POST /api/reservations`
-3. Server validates:
-   - Body schema via Zod (400 if invalid)
-   - JWT via authenticate middleware (401 if missing/invalid)
-   - Role via authorize middleware (403 if wrong role)
-   - Product exists and is active
-   - Warehouse exists and is active
-   - Sufficient stock in the product×warehouse inventory
-4. If all checks pass: stock is debited, reservation created (status: `Pending`), response 201
-5. User can cancel → `PUT /api/reservations/:id/cancel` → stock restored, status → `Cancelled`
-
-Concurrent reservation attempts on the same inventory use **Serializable transactions** with
-automatic retry on write conflict — guaranteeing no oversell.
+Clean architecture with pure TypeScript domain — swap the Prisma adapter and connection string to migrate from
+SQL Server to MySQL or PostgreSQL without changing business logic.
 
 ---
 
 ## Documentation
 
-| Resource | What you'll find |
-|---|---|---|
-| [`backend/README.md`](./backend/README.md) | Full system design, 4 Mermaid diagrams, scaling, DB swappability, trade-offs, setup |
-| [`frontend/README.md`](./frontend/README.md) | Frontend architecture, feature-slice layout, design system, auth flow, responsive strategy, testing |
+| Resource | Contents |
+|---------|-------------|
+| [`backend/README.md`](./backend/README.md) | Full system design, 4 Mermaid diagrams, scaling, trade-offs |
+| [`frontend/README.md`](./frontend/README.md) | Frontend architecture, feature-slices, design system, auth flow, testing |
 | [`frontend/docs/api-contract.md`](./frontend/docs/api-contract.md) | Complete API contract with curl examples, schemas, seed data |
 | [`backend/docs/database-schema.md`](./backend/docs/database-schema.md) | ER diagram and modeling notes |
-| `http://localhost:3333/documentation` | Interactive Swagger UI (try endpoints live) |
-| [Figma Design](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1) | UI reference — custom dark theme implemented pixel-by-pixel in shadcn/ui |
-
----
-
-## Assumptions & Trade-offs (summary)
-
-See the [backend README](./backend/README.md#trade-offs) for the full breakdown with cost/benefit analysis.
-
-- String roles/enums (SQL Server constraint)
-- No refresh token (internal system)
-- No pagination (scope-appropriate)
-- No WebSocket (polling is sufficient)
-- Serializable isolation (correctness over throughput)
-- User not linked to reservation (PRD scope)
-- No cache (stock consistency critical)
-- `GET /api/warehouses` opened to Operator (the reservation form needs the dropdown)
-- No public registration endpoint (seed-only users — internal tool, not a public product)
-
----
-
-## MySQL → SQL Server (Optional Discussion Topic)
-
-The assessment includes an optional discussion: if the company acquired another business whose
-product catalog lives in MySQL, how would product data be synchronized and kept consistent? No
-implementation is included — see the
-[backend README](./backend/README.md#mysql--sql-server-synchronization-optional-discussion-topic)
-for the full breakdown: one-time ETL migration, CDC-based continuous sync, and `externalId` + `sku`
-as the consistency keys between the two systems.
+| `http://localhost:3334/documentation` | Interactive Swagger UI |
+| [Figma Design](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1) | Visual layout reference |
 
 ---
 
 ## AI Usage
 
-Claude Code was used as the primary development harness for architecture planning,
-scaffolding, business rule review, documentation research (Context7), and test suggestions.
-All engineering decisions, implementation, and code review were performed by the developer.
+Claude Code was used as a development tool for architectural planning,
+scaffolding, business rules review, documentation research (Context7) and testing suggestions.
+All engineering, implementation and code review decisions were made by the developer.
