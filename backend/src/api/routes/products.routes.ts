@@ -24,7 +24,7 @@ export const productsRoutes: FastifyPluginAsyncZod = async (app) => {
 	app.get(
 		'/products',
 		{
-			preHandler: [authenticate, authorize(['Admin'])],
+			preHandler: [authenticate, authorize(['Admin', 'Operator'])],
 			schema: {
 				tags: ['Products'],
 				summary: 'List all products',
@@ -44,7 +44,7 @@ export const productsRoutes: FastifyPluginAsyncZod = async (app) => {
 	app.get(
 		'/products/:id',
 		{
-			preHandler: [authenticate, authorize(['Admin'])],
+			preHandler: [authenticate, authorize(['Admin', 'Operator'])],
 			schema: {
 				tags: ['Products'],
 				summary: 'Get a product by id',
