@@ -3,6 +3,10 @@
 A full-stack warehouse management application for tracking inventory and managing product
 reservations across multiple warehouses. Built with TypeScript end-to-end.
 
+> **Stack note:** The original assessment suggested ASP.NET Core (.NET) + React. Using a
+> TypeScript/Node stack (Bun + Fastify + Prisma) instead of .NET + EF Core was agreed in
+> advance with the WTEC team over email. SQL Server is kept as the primary database, as required.
+
 > **Deep dive into architecture, scaling, DB swappability, and trade-offs →**
 > [`backend/README.md`](./backend/README.md)
 
