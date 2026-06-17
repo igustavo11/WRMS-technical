@@ -19,7 +19,10 @@ export function buildApp() {
 	app.setSerializerCompiler(serializerCompiler);
 	app.setErrorHandler(errorHandler);
 	app.register(fastifyCors, {
-		origin: process.env.CORS_ORIGIN as string,
+		origin: process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? true,
+		methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization'],
+		credentials: true,
 	});
 
 	app.register(fastifySwagger, {
