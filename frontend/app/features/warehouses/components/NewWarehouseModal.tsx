@@ -92,7 +92,7 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 					<span className="text-[#f0f0f0] text-[20px] font-normal">
 						Novo Armazem
 					</span>
-					<DialogClose render={<button type="button" aria-label="Close" />}>
+					<DialogClose render={<Button type="button" aria-label="Close" />}>
 						<X size={14} />
 					</DialogClose>
 				</div>

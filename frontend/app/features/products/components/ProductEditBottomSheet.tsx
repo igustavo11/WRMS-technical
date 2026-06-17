@@ -5,15 +5,15 @@ import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Button } from '~/components/ui/button';
-import {
-	Dialog,
-	DialogContent,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
+import {
+	Sheet,
+	SheetContent,
+	SheetFooter,
+	SheetHeader,
+	SheetTitle,
+} from '~/components/ui/sheet';
 import { Switch } from '~/components/ui/switch';
 import { Textarea } from '~/components/ui/textarea';
 import { useCreateProduct } from '../hooks/useCreateProduct';
@@ -30,7 +30,7 @@ type Props = {
 	editProduct?: Product;
 };
 
-export function NewProductModal({ open, onClose, editProduct }: Props) {
+export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 	const isEditing = !!editProduct;
 	const createMutation = useCreateProduct();
 	const updateMutation = useUpdateProduct();
@@ -121,22 +121,22 @@ export function NewProductModal({ open, onClose, editProduct }: Props) {
 	};
 
 	return (
-		<Dialog
+		<Sheet
 			open={open}
 			onOpenChange={(open) => {
 				if (!open) handleCancel();
 			}}
 		>
-			<DialogContent className="bg-[#161616] border border-[#2a2a2a] max-w-[500px] p-0 gap-0">
-				<DialogHeader className="px-[20px] pt-[20px] pb-[17px] border-b border-[#2a2a2a]">
-					<DialogTitle className="text-[#f0f0f0] text-[24px] font-semibold leading-[31.2px]">
+			<SheetContent className="bg-[#1e1e1e] px-0 pb-0">
+				<SheetHeader className="px-[20px] pt-[4px] pb-[17px] border-b border-[#2a2a2a]">
+					<SheetTitle className="text-[#f0f0f0] text-[24px] font-semibold leading-[31.2px]">
 						{isEditing ? 'Editar Produto' : 'Novo Produto'}
-					</DialogTitle>
-				</DialogHeader>
+					</SheetTitle>
+				</SheetHeader>
 
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col px-[20px] py-[20px] gap-[16px]"
+					className="flex flex-col px-[20px] py-[20px] gap-[16px] overflow-y-auto"
 				>
 					<div className="flex flex-col gap-[4px]">
 						<Label className="text-[#f0f0f0] text-[12px] leading-[16.8px]">
@@ -147,7 +147,7 @@ export function NewProductModal({ open, onClose, editProduct }: Props) {
 								{...register('sku')}
 								placeholder=""
 								disabled={isEditing}
-								className={`bg-[#1e1e1e] border pr-[36px] ${errors.sku ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'} ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+								className={`bg-[#161616] border pr-[36px] ${errors.sku ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'} ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
 							/>
 							{!isEditing && (
 								<div className="absolute right-[12px] top-1/2 -translate-y-1/2">
@@ -181,7 +181,7 @@ export function NewProductModal({ open, onClose, editProduct }: Props) {
 						<Input
 							{...register('name')}
 							placeholder="Ex: Transformador 500kVA"
-							className={`bg-[#1e1e1e] border ${errors.name ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'}`}
+							className={`bg-[#161616] border ${errors.name ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'}`}
 						/>
 						{errors.name && (
 							<span className="text-[#e24b4a] text-[12px]">
@@ -197,7 +197,7 @@ export function NewProductModal({ open, onClose, editProduct }: Props) {
 						<Textarea
 							{...register('description')}
 							placeholder="Detalhes técnicos do produto..."
-							className="bg-[#1e1e1e] border border-[#2a2a2a] resize-none"
+							className="bg-[#161616] border border-[#2a2a2a] resize-none"
 						/>
 					</div>
 
@@ -224,12 +224,12 @@ export function NewProductModal({ open, onClose, editProduct }: Props) {
 						</div>
 					</div>
 
-					<DialogFooter className="flex-row justify-end gap-[12px] px-0 pb-0 border-t-0 bg-transparent">
+					<SheetFooter className="flex-row justify-end gap-[12px] px-0 pb-0 border-t-0 bg-transparent">
 						<Button
 							type="button"
 							variant="outline"
 							onClick={handleCancel}
-							className="bg-[#1e1e1e] border border-[#2a2a2a] text-[#f0f0f0] hover:bg-[#2a2a2a]"
+							className="bg-[#161616] border border-[#2a2a2a] text-[#f0f0f0] hover:bg-[#2a2a2a]"
 						>
 							Cancelar
 						</Button>
@@ -238,11 +238,11 @@ export function NewProductModal({ open, onClose, editProduct }: Props) {
 							disabled={mutation.isPending}
 							className="bg-[#1cc8a8] text-[#0a3d34] hover:bg-[#4ce4c3] disabled:opacity-50"
 						>
-							{isEditing ? 'Salvar' : 'Criar Produto'}
+							{isEditing ? 'Salvar Alterações' : 'Criar Produto'}
 						</Button>
-					</DialogFooter>
+					</SheetFooter>
 				</form>
-			</DialogContent>
-		</Dialog>
+			</SheetContent>
+		</Sheet>
 	);
 }

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { Button } from '~/components/ui/button';
 import type { Warehouse } from '../services/warehousesApi';
 
 type WarehouseWithMetrics = Warehouse & {
@@ -86,18 +87,17 @@ export function WarehouseCard({ warehouse }: WarehouseCardProps) {
 				</div>
 			</div>
 
-			<button
+			<Button
 				type="button"
-				onClick={() => navigate('/inventory', { state: { warehouseFilter: warehouse.id } })}
-				className={
-					warehouse.isActive
-						? 'border border-[#1cc8a8] rounded-[10px] h-[40px] w-full flex items-center justify-center gap-2 text-[#1cc8a8] text-[14px] font-medium hover:bg-[rgba(28,200,168,0.08)] transition-colors'
-						: 'border border-[#2a2a2a] rounded-[10px] h-[40px] w-full flex items-center justify-center gap-2 text-[#a0a0a0] text-[14px] font-medium'
+				variant="outline"
+				onClick={() =>
+					navigate('/inventory', { state: { warehouseFilter: warehouse.id } })
 				}
+				className={`w-full gap-2 text-[14px] ${warehouse.isActive ? 'border-[#1cc8a8] text-[#1cc8a8] hover:bg-[rgba(28,200,168,0.08)]' : 'border-[#2a2a2a] text-[#a0a0a0]'}`}
 			>
 				<MaskIcon src="/icons/inventory.svg" w={15} h={15} />
 				Ver Inventario
-			</button>
+			</Button>
 		</div>
 	);
 }

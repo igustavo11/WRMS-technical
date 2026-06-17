@@ -1,3 +1,4 @@
+import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import {
 	Table,
@@ -132,13 +133,14 @@ export function ReservationsTable({
 							{reservation.status === 'Cancelled' ? (
 								<span className="text-[#606060]">—</span>
 							) : (
-								<button
+								<Button
 									type="button"
+									variant="outline"
 									onClick={() => onCancel?.(reservation.id)}
-									className="border border-[#e24b4a] text-[#e24b4a] rounded-[10px] px-[12px] py-[4px] text-[12px] leading-none hover:bg-[rgba(226,75,74,0.1)] transition-colors"
+									className="border-[#e24b4a] text-[#e24b4a] rounded-[10px] px-[12px] py-[4px] text-[12px] leading-none h-auto hover:bg-[rgba(226,75,74,0.1)]"
 								>
 									Cancelar
-								</button>
+								</Button>
 							)}
 						</TableCell>
 					</TableRow>

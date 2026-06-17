@@ -1,4 +1,5 @@
 import { Pencil } from 'lucide-react';
+import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import {
 	Table,
@@ -83,14 +84,15 @@ export function ProductsTable({ products, isLoading, onEdit }: Props) {
 							)}
 						</TableCell>
 						<TableCell className="text-right">
-							<button
+							<Button
 								type="button"
+								variant="ghost"
 								title="Editar produto"
 								onClick={() => onEdit?.(product)}
-								className="inline-flex items-center justify-center text-[#a0a0a0] hover:text-[#f0f0f0] transition-colors"
+								className="text-[#a0a0a0] hover:text-[#f0f0f0]"
 							>
 								<Pencil size={15} />
-							</button>
+							</Button>
 						</TableCell>
 					</TableRow>
 				))}
