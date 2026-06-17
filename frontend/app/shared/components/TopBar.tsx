@@ -66,13 +66,11 @@ export function TopBar() {
 		<>
 			{/* Mobile Header */}
 			<header className="md:hidden shrink-0 bg-[#161616] border-b border-[#2a2a2a] flex items-center justify-between px-4 py-4 z-10">
-				<div className="flex flex-col gap-[3px]">
-					<span className="text-[#4ce4c3] text-[24px] font-bold leading-none">
-						{pageTitle}
-					</span>
+				<div className="flex items-center gap-3">
+					<img src="/wtec-logo.svg" alt="WTec" className="h-7 w-auto" />
 					{!isAdmin && (
 						<span className="text-[#a0a0a0] text-[12px] leading-none">
-							WRMS Operator
+							Operator
 						</span>
 					)}
 				</div>
