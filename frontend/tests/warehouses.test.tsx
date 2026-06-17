@@ -221,10 +221,10 @@ describe('WarehousesPage', () => {
 
 		renderWithProviders(<WarehousesPage />);
 
-		expect(screen.getByText('Nenhum armazem cadastrado.')).toBeInTheDocument();
+		expect(screen.getByText('Nenhum armazém cadastrado.')).toBeInTheDocument();
 	});
 
-	it('"Novo Armazem" opens modal', async () => {
+	it('"Novo Armazém" opens modal', async () => {
 		const user = userEvent.setup();
 		vi.mocked(useWarehouses).mockReturnValue(
 			mockQueryReturn({ data: mockWarehouses }),
@@ -232,12 +232,12 @@ describe('WarehousesPage', () => {
 
 		renderWithProviders(<WarehousesPage />);
 
-		await user.click(screen.getByRole('button', { name: '+ Novo Armazem' }));
+		await user.click(screen.getByRole('button', { name: '+ Novo Armazém' }));
 
-		expect(screen.getByText('Novo Armazem')).toBeInTheDocument();
+		expect(screen.getByText('Novo Armazém')).toBeInTheDocument();
 	});
 
-	it('"Ver Inventario" navigates to /inventory', async () => {
+	it('"Ver Inventário" navigates to /inventory', async () => {
 		const user = userEvent.setup();
 		vi.mocked(useWarehouses).mockReturnValue(
 			mockQueryReturn({ data: [mockWarehouses[0]] }),
@@ -245,7 +245,7 @@ describe('WarehousesPage', () => {
 
 		renderWithProviders(<WarehousesPage />);
 
-		await user.click(screen.getByRole('button', { name: /Ver Inventario/i }));
+		await user.click(screen.getByRole('button', { name: /Ver Inventário/i }));
 
 		expect(mockNavigate).toHaveBeenCalledWith('/inventory', {
 			state: { warehouseFilter: '1' },
@@ -260,12 +260,14 @@ describe('NewWarehouseModal', () => {
 
 		renderWithProviders(<NewWarehouseModal open={true} onClose={vi.fn()} />);
 
-		await user.click(screen.getByRole('button', { name: 'Salvar Armazem' }));
+		await user.click(screen.getByRole('button', { name: 'Salvar Armazém' }));
 
 		expect(
-			await screen.findByText('Warehouse name is required'),
+			await screen.findByText('Nome do armazém é obrigatório'),
 		).toBeInTheDocument();
-		expect(await screen.findByText('Location is required')).toBeInTheDocument();
+		expect(
+			await screen.findByText('Localização é obrigatória'),
+		).toBeInTheDocument();
 	});
 
 	it('successful creation', async () => {
@@ -282,12 +284,12 @@ describe('NewWarehouseModal', () => {
 		const inputs = screen.getAllByRole('textbox');
 		await user.type(inputs[0], 'Armazem Teste');
 		await user.type(inputs[1], 'Belo Horizonte, MG');
-		await user.click(screen.getByRole('button', { name: 'Salvar Armazem' }));
+		await user.click(screen.getByRole('button', { name: 'Salvar Armazém' }));
 
 		await waitFor(() => {
 			expect(onClose).toHaveBeenCalledOnce();
 		});
-		expect(toast.success).toHaveBeenCalledWith('Armazem criado com sucesso.');
+		expect(toast.success).toHaveBeenCalledWith('Armazém criado com sucesso.');
 	});
 
 	it('Cancelar resets and closes', async () => {

@@ -147,16 +147,16 @@ beforeEach(() => {
 });
 
 describe('getStockStatus', () => {
-	it('returns Crítico for quantity < 10', () => {
-		expect(getStockStatus(0)).toBe('Crítico');
-		expect(getStockStatus(5)).toBe('Crítico');
-		expect(getStockStatus(9)).toBe('Crítico');
+	it('returns Critical for quantity < 10', () => {
+		expect(getStockStatus(0)).toBe('Critical');
+		expect(getStockStatus(5)).toBe('Critical');
+		expect(getStockStatus(9)).toBe('Critical');
 	});
 
-	it('returns Atenção for quantity 10-49', () => {
-		expect(getStockStatus(10)).toBe('Atenção');
-		expect(getStockStatus(25)).toBe('Atenção');
-		expect(getStockStatus(49)).toBe('Atenção');
+	it('returns Warning for quantity 10-49', () => {
+		expect(getStockStatus(10)).toBe('Warning');
+		expect(getStockStatus(25)).toBe('Warning');
+		expect(getStockStatus(49)).toBe('Warning');
 	});
 
 	it('returns Normal for quantity >= 50', () => {
@@ -201,17 +201,21 @@ describe('InventoryAdmin', () => {
 		);
 
 		renderWithProviders(<InventoryAdmin />);
+
+		expect(screen.getAllByText('Ajustar').length).toBeGreaterThanOrEqual(
+			mockInventory.length,
+		);
 	});
 
-	it('shows Ajustar buttons for each row', () => {
+	it('shows error state with retry button', () => {
 		vi.mocked(useInventory).mockReturnValue(
-			mockQueryReturn({ data: mockInventory }),
+			mockQueryReturn({ data: undefined, isError: true }),
 		);
 		vi.mocked(useProducts).mockReturnValue(
-			mockQueryReturn({ data: mockProducts }),
+			mockQueryReturn({ data: undefined }),
 		);
 		vi.mocked(useWarehouses).mockReturnValue(
-			mockQueryReturn({ data: mockWarehouses }),
+			mockQueryReturn({ data: undefined }),
 		);
 
 		renderWithProviders(<InventoryAdmin />);

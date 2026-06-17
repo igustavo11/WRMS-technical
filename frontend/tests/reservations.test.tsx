@@ -273,7 +273,7 @@ describe('ReservationsPage', () => {
 		renderWithProviders(<ReservationsPage />);
 
 		const statusTrigger = screen.getByRole('combobox', {
-			name: 'Filtrar por status',
+			name: 'Status:',
 		});
 		await user.click(statusTrigger);
 		const pendingOption = await screen.findByRole('option', {
@@ -290,7 +290,7 @@ describe('ReservationsPage', () => {
 		renderWithProviders(<ReservationsPage />);
 
 		const warehouseTrigger = screen.getByRole('combobox', {
-			name: 'Filtrar por armazém',
+			name: 'Armazém:',
 		});
 		await user.click(warehouseTrigger);
 		const sulOption = await screen.findByRole('option', {
@@ -309,11 +309,11 @@ describe('ReservationsPage', () => {
 		const user = userEvent.setup();
 		renderWithProviders(<ReservationsPage />);
 
-		const fromInput = screen.getByLabelText('Data inicial');
+		const fromInput = screen.getByLabelText('De:');
 		await user.clear(fromInput);
 		await user.type(fromInput, '2026-06-14');
 
-		const toInput = screen.getByLabelText('Data final');
+		const toInput = screen.getByLabelText('Até:');
 		await user.clear(toInput);
 		await user.type(toInput, '2026-06-15');
 
@@ -327,7 +327,7 @@ describe('ReservationsPage', () => {
 		renderWithProviders(<ReservationsPage />);
 
 		const statusTrigger = screen.getByRole('combobox', {
-			name: 'Filtrar por status',
+			name: 'Status:',
 		});
 		await user.click(statusTrigger);
 		const pendingOption = await screen.findByRole('option', {
