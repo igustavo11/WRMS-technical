@@ -642,6 +642,21 @@ They are not mocked.
 unit tests (use cases) are mocked and fast — the integration tests cover the real integration
 points.
 
+### `GET /api/products` opened to Operator
+
+The PRD's permission table scoped every product endpoint to Admin only. However, the reservation
+form — used by both Admin and Operator — needs to populate a product dropdown.
+
+**Decision**: `GET /api/products` is open to both roles; `POST /api/products` and
+`PUT /api/products/:id` stay Admin-only.
+
+**Cost**: Operator gets read access to the full product catalog (SKU, name, status) that the
+original spec scoped to Admin only. An alternative would have been a dedicated dropdown endpoint
+returning only `{ id, name }` for active products, but that would add an extra endpoint for no
+real security gain — the product list is not sensitive data.
+
+**Benefit**: the reservation form works without inventing a second, redundant endpoint.
+
 ### `GET /api/warehouses` opened to Operator
 
 The PRD's first-pass permission table scoped every warehouse endpoint to Admin only. In practice,
@@ -819,8 +834,8 @@ This starts SQL Server + backend + frontend.
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | `admin@wtec.com` | `123456` |
-| Operator | `operator@wtec.com` | `123456` |
+| Admin | `admin@wtec.com` | `Admin@123` |
+| Operator | `operator@wtec.com` | `Operator@123` |
 
 ---
 

@@ -324,9 +324,9 @@ bun run dev   # → http://localhost:5173
 **Seed credentials** (created by the backend seed):
 
 | Email | Password | Role |
-|---|---|---|
-| `admin@wtec.com` | `123456` | Admin |
-| `operator@wtec.com` | `123456` | Operator |
+|---|---|---|---|
+| `admin@wtec.com` | `Admin@123` | Admin |
+| `operator@wtec.com` | `Operator@123` | Operator |
 
 ---
 
@@ -384,6 +384,7 @@ Claude Code served as an accelerator, not an architect. The engineering judgment
 
 | Decision | Rationale |
 |---|---|
+| **`GET /api/products` opened to Operator** | The PRD scoped product visibility to Admin only, but the reservation form needs a product dropdown for both roles. The backend exposes `GET /api/products` to Operator; the frontend `ProductsPage` remains Admin-only via `AdminLayout`. Documented in backend README as a conscious trade-off. |
 | **`{ token, user }` stored together in localStorage** | No `/me` endpoint exists in the API contract. The login response is the only source of role/identity data, so the user payload is persisted alongside the token. Acceptable for a single-session internal tool. |
 | **Context API for auth state** | The assessment explicitly required Context API for authentication state management. In a production app with more complex auth needs, Zustand would reduce provider boilerplate and provide better devtools. |
 | **Absolute quantity on `PUT /inventory`** | The API contract specifies absolute inventory values, not deltas. The UI uses a numeric input showing the current quantity — no +/- stepper at the inventory level, as the API doesn't support delta adjustments. |
