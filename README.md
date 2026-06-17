@@ -8,6 +8,15 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 
 ---
 
+> ### 🎨 Design System
+>
+> The UI is built pixel-by-pixel from the [Figma reference](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1)
+> — a custom dark theme with exact Figma hex values (`#1CC8A8` primary, `#131313` background, `#161616` cards)
+> implemented in Tailwind CSS v4 + shadcn/ui owned components. Every color token, spacing, and border radius
+> matches the design spec, not framework defaults.
+
+---
+
 ## Stack
 
 | Layer | Technology |
@@ -26,20 +35,42 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 
 ## Quick Start
 
+### Full stack with Docker (recommended)
+
 ```bash
-docker compose up -d                    # start SQL Server
-cd backend && cp .env.example .env
-bun install && bunx prisma db push && bun run dev   # API at :3333
-cd frontend && cp .env.example .env
-npm install && npm run dev              # UI at :5173
+docker compose up --build
 ```
 
-### Seed users
+This starts all three services:
+- **Frontend** → `http://localhost:8085`
+- **Backend API** → `http://localhost:3334`
+- **SQL Server** → `localhost:1433`
+
+The entrypoint automatically creates the database, runs migrations, and seeds test data.
+
+### Run locally (development)
+
+```bash
+# Terminal 1 — SQL Server
+docker compose up -d db
+
+# Terminal 2 — Backend
+cd backend && cp .env.example .env
+bun install && bunx prisma db push && bunx prisma db seed && bun run dev
+# → http://localhost:3333
+
+# Terminal 3 — Frontend
+cd frontend && cp .env.example .env
+bun install && bun run dev
+# → http://localhost:5173
+```
+
+### Seed credentials
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@wtec.com | 123456 |
-| Operator | operator@wtec.com | 123456 |
+| Admin | admin@wtec.com | Admin@123 |
+| Operator | operator@wtec.com | Operator@123 |
 
 ---
 
