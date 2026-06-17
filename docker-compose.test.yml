@@ -1,0 +1,30 @@
+# Containerized test step — runs the full backend suite (unit + integration)
+# inside the backend image, against the Dockerized SQL Server.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.test.yml run --rm --build backend-test
+#
+# Exit code propagates: non-zero if any test fails. Safe for CI / pre-deploy gates.
+# It targets an isolated `wrms_test` database and never touches the production `wrms` db.
+
+services:
+  backend-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.test
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "sqlserver://db:1433;database=wrms_test;user=sa;password=${SA_PASSWORD};encrypt=false;trustServerCertificate=true"
+      JWT_SECRET: ${JWT_SECRET:-test-secret}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-10}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+    # Override the production entrypoint (entrypoint.sh starts the server):
+    # create the test database, then run the full Vitest suite.
+    # Reset the isolated test DB to a clean schema before each run, and run test
+    # files serially (--no-file-parallelism): the integration suite shares one
+    # database and asserts global counts, so concurrent files would race.
+    entrypoint: ["sh", "-c", "echo \"node: $(node --version)\" && bun setup-db.ts && bunx prisma db push --force-reset && bunx vitest run --no-file-parallelism"]
+    restart: "no"

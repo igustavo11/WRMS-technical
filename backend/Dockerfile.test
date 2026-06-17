@@ -1,0 +1,23 @@
+# Test image — same base as the production Dockerfile, plus a real Node.js.
+#
+# Why Node is needed: Vitest's default `forks` pool spawns worker processes via
+# the `node` binary. The `oven/bun:1-alpine` image only ships Bun's Node shim,
+# which mis-resolves some ESM packages (e.g. zod v4) under Vitest, so the
+# integration suites fail to import. Installing real Node makes the workers
+# behave identically to local/CI runs on a Node host.
+
+FROM oven/bun:1-alpine
+
+RUN apk add --no-cache nodejs
+
+WORKDIR /app
+
+COPY package.json bun.lock ./
+COPY prisma ./prisma/
+
+RUN bun install --frozen-lockfile
+RUN bunx prisma generate
+
+COPY . .
+
+# The actual test command is provided by docker-compose.test.yml (entrypoint).
