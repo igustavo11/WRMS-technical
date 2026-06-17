@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import { useDashboard } from '~/features/dashboard/hooks/useDashboard';
+import { useIsMobile } from '~/shared/hooks/useIsMobile';
 import { NewWarehouseModal } from '../components/NewWarehouseModal';
+import { NewWarehouseSheet } from '../components/NewWarehouseSheet';
 import { WarehouseCard } from '../components/WarehouseCard';
 import { useWarehouses } from '../hooks/useWarehouses';
 import type { Warehouse } from '../services/warehousesApi';
@@ -45,6 +47,7 @@ function SkeletonGrid() {
 
 export default function WarehousesPage() {
 	const [modalOpen, setModalOpen] = useState(false);
+	const isMobile = useIsMobile();
 
 	const { data: warehouses, isLoading, isError, refetch } = useWarehouses();
 	const { data: dashboardData } = useDashboard();
@@ -109,7 +112,17 @@ export default function WarehousesPage() {
 				</div>
 			)}
 
-			<NewWarehouseModal open={modalOpen} onClose={() => setModalOpen(false)} />
+			{isMobile ? (
+				<NewWarehouseSheet
+					open={modalOpen}
+					onClose={() => setModalOpen(false)}
+				/>
+			) : (
+				<NewWarehouseModal
+					open={modalOpen}
+					onClose={() => setModalOpen(false)}
+				/>
+			)}
 		</div>
 	);
 }
