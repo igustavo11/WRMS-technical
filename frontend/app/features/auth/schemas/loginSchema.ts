@@ -1,8 +1,14 @@
+import type { TFunction } from 'i18next';
 import { z } from 'zod';
 
-export const loginSchema = z.object({
-	email: z.email('Informe um e-mail válido'),
-	password: z.string().min(1, 'Informe sua senha'),
-});
+export type LoginFormValues = {
+	email: string;
+	password: string;
+};
 
-export type LoginFormValues = z.infer<typeof loginSchema>;
+export function createLoginSchema(t: TFunction) {
+	return z.object({
+		email: z.email(t('auth.validation.emailInvalid')),
+		password: z.string().min(1, t('auth.validation.passwordRequired')),
+	});
+}

@@ -1,7 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, X } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '~/components/ui/dialog';
 import { Switch } from '~/components/ui/switch';
@@ -41,6 +43,8 @@ function MaskIcon({ src, w, h }: { src: string; w: number; h: number }) {
 
 export function NewWarehouseModal({ open, onClose }: Props) {
 	const mutation = useCreateWarehouse();
+	const { t, i18n } = useTranslation();
+	const schema = useMemo(() => createWarehouseSchema(t), [i18n.language]);
 
 	const {
 		register,
@@ -50,7 +54,7 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 		reset,
 		formState: { errors },
 	} = useForm<CreateWarehouseFormValues>({
-		resolver: zodResolver(createWarehouseSchema),
+		resolver: zodResolver(schema),
 		defaultValues: {
 			name: '',
 			location: '',
@@ -70,10 +74,10 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 				location: values.location,
 				isActive: values.isActive,
 			});
-			toast.success('Armazem criado com sucesso.');
+			toast.success(t('warehouses.toast.createSuccess'));
 			handleCancel();
 		} catch {
-			toast.error('Erro ao criar armazem. Tente novamente.');
+			toast.error(t('warehouses.toast.createError'));
 		}
 	};
 
@@ -90,7 +94,7 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 			>
 				<div className="bg-[#161616] border-b border-[#2a2a2a] px-[20px] pt-[20px] pb-[21px] flex items-center justify-between">
 					<span className="text-[#f0f0f0] text-[20px] font-normal">
-						Novo Armazem
+						{t('warehouses.modalTitle')}
 					</span>
 					<DialogClose render={<Button type="button" aria-label="Close" />}>
 						<X size={14} />
@@ -103,11 +107,12 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 				>
 					<div className="flex flex-col gap-[4px]">
 						<label className="text-[#a0a0a0] text-[12px]">
-							Nome do Armazem <span className="text-[#e24b4a]">*</span>
+							{t('warehouses.warehouseName')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</label>
 						<input
 							{...register('name')}
-							placeholder="Ex: Hub Leste - RJ"
+							placeholder={t('warehouses.warehouseNamePlaceholder')}
 							className={`bg-[#161616] border rounded-[10px] p-[13px] text-[14px] text-[#f0f0f0] w-full outline-none ${errors.name ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'}`}
 						/>
 						{errors.name && (
@@ -119,7 +124,8 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 
 					<div className="flex flex-col gap-[4px]">
 						<label className="text-[#a0a0a0] text-[12px]">
-							Localizacao Fisica <span className="text-[#e24b4a]">*</span>
+							{t('warehouses.physicalLocation')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</label>
 						<div className="relative">
 							<div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[#606060]">
@@ -127,7 +133,7 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 							</div>
 							<input
 								{...register('location')}
-								placeholder="Cidade, Estado"
+								placeholder={t('warehouses.locationPlaceholder')}
 								className={`bg-[#161616] border rounded-[10px] pl-[41px] pr-[13px] py-[13px] text-[14px] text-[#f0f0f0] w-full outline-none ${errors.location ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'}`}
 							/>
 						</div>
@@ -142,9 +148,11 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 
 					<div className="flex items-center justify-between">
 						<div className="flex flex-col gap-0.5">
-							<span className="text-[#f0f0f0] text-[14px]">Status Inicial</span>
+							<span className="text-[#f0f0f0] text-[14px]">
+								{t('warehouses.initialStatus')}
+							</span>
 							<span className="text-[#a0a0a0] text-[12px]">
-								Definir armazem como operacional imediatamente.
+								{t('warehouses.initialStatusSubtitle')}
 							</span>
 						</div>
 						<div className="flex items-center gap-3">
@@ -153,7 +161,7 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 								onCheckedChange={(v) => setValue('isActive', v)}
 							/>
 							<span className="text-[#1cc8a8] text-[14px] font-medium">
-								{watch('isActive') ? 'Ativo' : 'Inativo'}
+								{watch('isActive') ? t('common.active') : t('common.inactive')}
 							</span>
 						</div>
 					</div>
@@ -165,7 +173,7 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 							onClick={handleCancel}
 							className="border-[#2a2a2a] text-[#f0f0f0] h-[40px] px-[21px] text-[14px] font-medium"
 						>
-							Cancelar
+							{t('common.cancel')}
 						</Button>
 						<Button
 							type="submit"
@@ -173,7 +181,7 @@ export function NewWarehouseModal({ open, onClose }: Props) {
 							className="bg-[#1cc8a8] text-[#004e40] h-[40px] px-6 text-[14px] font-semibold flex items-center gap-2 hover:bg-[#4ce4c3]"
 						>
 							<Save size={14} />
-							Salvar Armazem
+							{t('warehouses.saveWarehouse')}
 						</Button>
 					</div>
 				</form>

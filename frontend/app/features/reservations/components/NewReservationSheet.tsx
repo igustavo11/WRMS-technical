@@ -4,6 +4,7 @@ import { Package } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import { Label } from '~/components/ui/label';
 import {
@@ -43,6 +44,8 @@ export function NewReservationSheet({ open, onClose }: Props) {
 	const { data: products } = useProducts();
 	const { data: warehouses } = useWarehouses();
 	const { data: inventory } = useInventory();
+	const { t, i18n } = useTranslation();
+	const schema = useMemo(() => createReservationSchema(t), [i18n.language]);
 
 	const [stepperValue, setStepperValue] = useState(1);
 
@@ -55,7 +58,7 @@ export function NewReservationSheet({ open, onClose }: Props) {
 		reset,
 		formState: { errors },
 	} = useForm<CreateReservationFormValues>({
-		resolver: zodResolver(createReservationSchema),
+		resolver: zodResolver(schema),
 		defaultValues: {
 			productId: '',
 			warehouseId: '',
@@ -103,33 +106,31 @@ export function NewReservationSheet({ open, onClose }: Props) {
 	const onSubmit = async (values: CreateReservationFormValues) => {
 		if (values.quantity > availableStock) {
 			setError('quantity', {
-				message:
-					'Estoque insuficiente. A quantidade solicitada excede o estoque disponível para este armazém.',
+				message: t('reservations.modal.insufficientStock'),
 			});
 			return;
 		}
 
 		try {
 			await createMutation.mutateAsync(values);
-			toast.success('Reserva criada com sucesso.');
+			toast.success(t('reservations.toast.createSuccess'));
 			handleCancel();
 		} catch (err) {
 			if (axios.isAxiosError(err) && err.response?.status === 422) {
 				const errorCode = err.response.data?.error;
 				if (errorCode === 'INSUFFICIENT_STOCK') {
 					setError('quantity', {
-						message:
-							'Estoque insuficiente. A quantidade solicitada excede o estoque disponível para este armazém.',
+						message: t('reservations.modal.insufficientStock'),
 					});
 				} else if (errorCode === 'INACTIVE_PRODUCT') {
-					toast.error('Produto inativo. Não é possível criar a reserva.');
+					toast.error(t('reservations.toast.inactiveProduct'));
 				} else if (errorCode === 'INACTIVE_WAREHOUSE') {
-					toast.error('Armazém inativo. Não é possível criar a reserva.');
+					toast.error(t('reservations.toast.inactiveWarehouse'));
 				} else {
-					toast.error('Erro ao criar reserva. Tente novamente.');
+					toast.error(t('reservations.toast.createError'));
 				}
 			} else {
-				toast.error('Erro ao criar reserva. Tente novamente.');
+				toast.error(t('reservations.toast.createError'));
 			}
 		}
 	};
@@ -144,7 +145,7 @@ export function NewReservationSheet({ open, onClose }: Props) {
 			<SheetContent className="bg-[#1e1e1e] px-0 pb-0 min-h-[60vh]">
 				<SheetHeader className="px-[20px] pt-[4px] pb-[17px] border-b border-[#2a2a2a]">
 					<SheetTitle className="text-[#f0f0f0] text-[24px] font-semibold leading-[31.2px]">
-						Nova Reserva
+						{t('reservations.modal.title')}
 					</SheetTitle>
 				</SheetHeader>
 
@@ -154,7 +155,8 @@ export function NewReservationSheet({ open, onClose }: Props) {
 				>
 					<div className="flex flex-col gap-[4px]">
 						<Label className="text-[#f0f0f0] text-[12px] leading-[16.8px]">
-							Produto <span className="text-[#e24b4a]">*</span>
+							{t('reservations.modal.product')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</Label>
 						<Controller
 							name="productId"
@@ -162,12 +164,19 @@ export function NewReservationSheet({ open, onClose }: Props) {
 							render={({ field }) => (
 								<Select value={field.value} onValueChange={field.onChange}>
 									<SelectTrigger
-										aria-label="Selecionar produto"
+										aria-label={t('reservations.modal.selectProduct')}
 										className="w-full bg-[#161616] border border-[#2a2a2a]"
 									>
-										<SelectValue placeholder="Selecione um produto">
+										<SelectValue
+											placeholder={t(
+												'reservations.modal.selectProductPlaceholder',
+											)}
+										>
 											{(value: string | null) => {
-												if (!value) return 'Selecione um produto';
+												if (!value)
+													return t(
+														'reservations.modal.selectProductPlaceholder',
+													);
 												const product = products?.find((p) => p.id === value);
 												return product?.name ?? value;
 											}}
@@ -194,7 +203,8 @@ export function NewReservationSheet({ open, onClose }: Props) {
 
 					<div className="flex flex-col gap-[4px]">
 						<Label className="text-[#f0f0f0] text-[12px] leading-[16.8px]">
-							Armazém <span className="text-[#e24b4a]">*</span>
+							{t('reservations.modal.warehouse')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</Label>
 						<Controller
 							name="warehouseId"
@@ -202,12 +212,19 @@ export function NewReservationSheet({ open, onClose }: Props) {
 							render={({ field }) => (
 								<Select value={field.value} onValueChange={field.onChange}>
 									<SelectTrigger
-										aria-label="Selecionar armazém"
+										aria-label={t('reservations.modal.selectWarehouse')}
 										className="w-full bg-[#161616] border border-[#2a2a2a]"
 									>
-										<SelectValue placeholder="Selecione um armazém">
+										<SelectValue
+											placeholder={t(
+												'reservations.modal.selectWarehousePlaceholder',
+											)}
+										>
 											{(value: string | null) => {
-												if (!value) return 'Selecione um armazém';
+												if (!value)
+													return t(
+														'reservations.modal.selectWarehousePlaceholder',
+													);
 												const warehouse = warehouses?.find(
 													(w) => w.id === value,
 												);
@@ -240,9 +257,13 @@ export function NewReservationSheet({ open, onClose }: Props) {
 								<Package size={12} className="text-[#1cc8a8]" />
 							</div>
 							<div className="flex flex-col">
-								<span className="text-[#a0a0a0] text-[12px]">Disponível</span>
+								<span className="text-[#a0a0a0] text-[12px]">
+									{t('reservations.modal.available')}
+								</span>
 								<span className="text-[#f0f0f0] text-[14px] font-bold">
-									{availableStock} unidades
+									{t('reservations.modal.availableUnits', {
+										count: availableStock,
+									})}
 								</span>
 							</div>
 						</div>
@@ -255,7 +276,8 @@ export function NewReservationSheet({ open, onClose }: Props) {
 								quantityError ? 'text-[#e24b4a]' : 'text-[#f0f0f0]',
 							)}
 						>
-							Quantidade <span className="text-[#e24b4a]">*</span>
+							{t('reservations.modal.quantity')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</Label>
 						<Controller
 							name="quantity"
@@ -282,7 +304,7 @@ export function NewReservationSheet({ open, onClose }: Props) {
 							onClick={handleCancel}
 							className="w-full bg-[#161616] border border-[#2a2a2a] text-[#f0f0f0] hover:bg-[#2a2a2a]"
 						>
-							Cancelar
+							{t('common.cancel')}
 						</Button>
 						<Button
 							type="submit"
@@ -293,7 +315,7 @@ export function NewReservationSheet({ open, onClose }: Props) {
 							}
 							className="w-full bg-[#1cc8a8] text-[#00382d] disabled:bg-[#353534] disabled:text-[#a0a0a0] hover:bg-[#4ce4c3]"
 						>
-							Criar Reserva
+							{t('reservations.modal.submit')}
 						</Button>
 					</SheetFooter>
 				</form>

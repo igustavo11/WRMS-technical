@@ -1,16 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 import { ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { cn } from '~/lib/utils';
 import { useLogin } from '../hooks/useLogin';
-import { type LoginFormValues, loginSchema } from '../schemas/loginSchema';
+import {
+	createLoginSchema,
+	type LoginFormValues,
+} from '../schemas/loginSchema';
 
 const BRANDING_GRID = [
 	{ id: 'r1c1', filled: false },
@@ -25,30 +29,33 @@ export function LoginPage() {
 	const navigate = useNavigate();
 	const login = useLogin();
 	const [showPassword, setShowPassword] = useState(false);
+	const { t, i18n } = useTranslation();
+
+	const schema = useMemo(() => createLoginSchema(t), [i18n.language]);
 
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
+	} = useForm<LoginFormValues>({ resolver: zodResolver(schema) });
 
 	async function onSubmit(values: LoginFormValues) {
 		try {
 			await login.mutateAsync(values);
-			toast.success('Login realizado com sucesso!');
+			toast.success(t('auth.loginSuccess'));
 			navigate('/');
 		} catch (error) {
 			const message =
 				error instanceof AxiosError && error.response?.data?.message
 					? error.response.data.message
-					: 'Erro ao fazer login. Verifique suas credenciais.';
+					: t('auth.loginError');
 			toast.error(message);
 		}
 	}
 
 	const passwordErrorMessage =
 		errors.password?.message ??
-		(login.isError ? 'Senha incorreta. Tente novamente.' : undefined);
+		(login.isError ? t('auth.passwordError') : undefined);
 
 	return (
 		<div className="flex min-h-screen w-full bg-background">
@@ -80,10 +87,10 @@ export function LoginPage() {
 
 					<div className="flex flex-col gap-2">
 						<h1 className="text-3xl font-bold text-foreground">
-							Entrar na sua conta
+							{t('auth.title')}
 						</h1>
 						<p className="text-sm text-muted-foreground">
-							Gerencie reservas e inventário
+							{t('auth.subtitle')}
 						</p>
 					</div>
 
@@ -96,7 +103,7 @@ export function LoginPage() {
 								htmlFor="email"
 								className="text-[11px] tracking-wider text-muted-foreground uppercase"
 							>
-								E-mail de acesso
+								{t('auth.emailLabel')}
 							</Label>
 							<div className="relative">
 								<Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -126,7 +133,7 @@ export function LoginPage() {
 											: 'text-muted-foreground',
 									)}
 								>
-									Senha
+									{t('auth.passwordLabel')}
 								</Label>
 							</div>
 							<div className="relative">
@@ -145,7 +152,11 @@ export function LoginPage() {
 									type="button"
 									onClick={() => setShowPassword((value) => !value)}
 									className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
-									aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+									aria-label={
+										showPassword
+											? t('auth.hidePassword')
+											: t('auth.showPassword')
+									}
 								>
 									{showPassword ? (
 										<EyeOff className="size-4" />
@@ -166,14 +177,14 @@ export function LoginPage() {
 							disabled={login.isPending}
 							className="h-auto w-full justify-center gap-2 rounded-[10px] py-3 text-sm"
 						>
-							{login.isPending ? 'Entrando...' : 'Entrar'}
+							{login.isPending ? t('auth.submitLoading') : t('auth.submit')}
 							<ArrowRight className="size-4" />
 						</Button>
 					</form>
 
 					<div className="mt-8 flex items-center justify-center gap-2 border-t border-border pt-6 text-xs text-muted-foreground">
 						<ShieldCheck className="size-3.5" />
-						Acesso restrito a operadores autorizados
+						{t('auth.restrictedAccess')}
 					</div>
 				</div>
 			</div>

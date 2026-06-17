@@ -1,10 +1,18 @@
+import type { TFunction } from 'i18next';
 import { z } from 'zod';
 
-export const createProductSchema = z.object({
-	sku: z.string().min(1, 'SKU é obrigatório'),
-	name: z.string().min(1, 'Nome é obrigatório'),
-	description: z.string().optional(),
-	isActive: z.boolean(),
-});
+export type CreateProductFormValues = {
+	sku: string;
+	name: string;
+	description: string;
+	isActive: boolean;
+};
 
-export type CreateProductFormValues = z.infer<typeof createProductSchema>;
+export function createProductSchema(t: TFunction) {
+	return z.object({
+		sku: z.string().min(1, t('products.validation.skuRequired')),
+		name: z.string().min(1, t('products.validation.nameRequired')),
+		description: z.string(),
+		isActive: z.boolean(),
+	});
+}

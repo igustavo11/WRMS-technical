@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import i18n from '~/i18n/config';
 import { cancelReservation } from '../services/reservationsApi';
 
 export function useCancelReservation() {
@@ -10,10 +11,10 @@ export function useCancelReservation() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['reservations'] });
 			queryClient.invalidateQueries({ queryKey: ['inventory'] });
-			toast.success('Reserva cancelada com sucesso.');
+			toast.success(i18n.t('reservations.toast.cancelSuccess'));
 		},
 		onError: () => {
-			toast.error('Não foi possível cancelar a reserva.');
+			toast.error(i18n.t('reservations.toast.cancelError'));
 		},
 	});
 }

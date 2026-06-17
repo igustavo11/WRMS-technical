@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import i18n from '~/i18n/config';
 import {
 	type AdjustInventoryPayload,
 	adjustInventory,
@@ -27,10 +28,10 @@ export function useAdjustInventory() {
 		mutationFn: (payload: AdjustInventoryPayload) => adjustInventory(payload),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['inventory'] });
-			toast.success('Inventário atualizado.');
+			toast.success(i18n.t('inventory.toast.adjustSuccess'));
 		},
 		onError: () => {
-			toast.error('Não foi possível ajustar o inventário.');
+			toast.error(i18n.t('inventory.toast.adjustError'));
 		},
 	});
 }

@@ -1,10 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router';
 import { useAuth } from '~/features/auth/hooks/useAuth';
 import { cn } from '~/lib/utils';
 
 type NavItem = {
 	to: string;
-	label: string;
+	labelKey: string;
 	icon: string;
 	iconSize: { w: number; h: number };
 };
@@ -35,31 +36,31 @@ function NavIcon({ src, w, h }: { src: string; w: number; h: number }) {
 const adminNavItems: NavItem[] = [
 	{
 		to: '/',
-		label: 'Dashboard',
+		labelKey: 'nav.dashboard',
 		icon: '/icons/dashboard.svg',
 		iconSize: { w: 18, h: 22 },
 	},
 	{
 		to: '/products',
-		label: 'Produtos',
+		labelKey: 'nav.products',
 		icon: '/icons/products.svg',
 		iconSize: { w: 20, h: 24 },
 	},
 	{
 		to: '/warehouses',
-		label: 'Armazéns',
+		labelKey: 'nav.warehouses',
 		icon: '/icons/warehouses.svg',
 		iconSize: { w: 20, h: 22 },
 	},
 	{
 		to: '/inventory',
-		label: 'Inventário',
+		labelKey: 'nav.inventory',
 		icon: '/icons/inventory.svg',
 		iconSize: { w: 18, h: 22 },
 	},
 	{
 		to: '/reservations',
-		label: 'Reservas',
+		labelKey: 'nav.reservations',
 		icon: '/icons/reservations.svg',
 		iconSize: { w: 18, h: 24 },
 	},
@@ -68,31 +69,31 @@ const adminNavItems: NavItem[] = [
 const operatorNavItems: NavItem[] = [
 	{
 		to: '/',
-		label: 'Dashboard',
+		labelKey: 'nav.dashboard',
 		icon: '/icons/dashboard.svg',
 		iconSize: { w: 18, h: 18 },
 	},
 	{
 		to: '/products',
-		label: 'Produtos',
+		labelKey: 'nav.products',
 		icon: '/icons/products.svg',
 		iconSize: { w: 20, h: 20 },
 	},
 	{
 		to: '/inventory',
-		label: 'Inventário',
+		labelKey: 'nav.inventory',
 		icon: '/icons/inventory.svg',
 		iconSize: { w: 18, h: 18 },
 	},
 	{
 		to: '/warehouses',
-		label: 'Armazéns',
+		labelKey: 'nav.warehouses',
 		icon: '/icons/warehouses.svg',
 		iconSize: { w: 20, h: 18 },
 	},
 	{
 		to: '/reservations',
-		label: 'Reservas',
+		labelKey: 'nav.reservations',
 		icon: '/icons/reservations.svg',
 		iconSize: { w: 18, h: 20 },
 	},
@@ -100,6 +101,7 @@ const operatorNavItems: NavItem[] = [
 
 export function BottomNavBar() {
 	const { user } = useAuth();
+	const { t } = useTranslation();
 	const isAdmin = user?.role === 'Admin';
 	const navItems = isAdmin ? adminNavItems : operatorNavItems;
 
@@ -132,7 +134,7 @@ export function BottomNavBar() {
 									)}
 									<NavIcon src={item.icon} w={w} h={h} />
 									<span className="text-[10px] font-medium tracking-[0.5px] leading-none">
-										{item.label}
+										{t(item.labelKey)}
 									</span>
 								</>
 							)}

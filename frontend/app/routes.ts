@@ -14,7 +14,7 @@ export default [
 		]),
 		route('inventory', 'features/inventory/pages/InventoryPage.tsx'),
 		route('reservations', 'features/reservations/pages/ReservationsPage.tsx'),
-		route('settings', 'routes/placeholder.tsx', { id: 'settings' }),
+		route('settings', 'features/settings/pages/SettingsPage.tsx'),
 	]),
 	route('login', 'features/auth/pages/LoginPage.tsx'),
 ] satisfies RouteConfig;

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { useAuth } from '~/features/auth/hooks/useAuth';
@@ -5,7 +6,7 @@ import { cn } from '~/lib/utils';
 
 type NavItem = {
 	to: string;
-	label: string;
+	labelKey: string;
 	icon: string;
 	iconSize?: { w: number; h: number };
 };
@@ -36,31 +37,31 @@ function NavIcon({ src, w, h }: { src: string; w: number; h: number }) {
 const adminNavItems: NavItem[] = [
 	{
 		to: '/',
-		label: 'Dashboard',
+		labelKey: 'nav.dashboard',
 		icon: '/icons/dashboard.svg',
 		iconSize: { w: 18, h: 18 },
 	},
 	{
 		to: '/products',
-		label: 'Produtos',
+		labelKey: 'nav.products',
 		icon: '/icons/products.svg',
 		iconSize: { w: 20, h: 20 },
 	},
 	{
 		to: '/warehouses',
-		label: 'Armazéns',
+		labelKey: 'nav.warehouses',
 		icon: '/icons/warehouses.svg',
 		iconSize: { w: 20, h: 18 },
 	},
 	{
 		to: '/inventory',
-		label: 'Inventário',
+		labelKey: 'nav.inventory',
 		icon: '/icons/inventory.svg',
 		iconSize: { w: 18, h: 18 },
 	},
 	{
 		to: '/reservations',
-		label: 'Reservas',
+		labelKey: 'nav.reservations',
 		icon: '/icons/reservations.svg',
 		iconSize: { w: 18, h: 20 },
 	},
@@ -69,27 +70,32 @@ const adminNavItems: NavItem[] = [
 const operatorNavItems: NavItem[] = [
 	{
 		to: '/',
-		label: 'Dashboard',
+		labelKey: 'nav.dashboard',
 		icon: '/icons/dashboard.svg',
 		iconSize: { w: 18, h: 18 },
 	},
 	{
 		to: '/inventory',
-		label: 'Inventário',
+		labelKey: 'nav.inventory',
 		icon: '/icons/inventory.svg',
 		iconSize: { w: 18, h: 18 },
 	},
 	{
 		to: '/reservations',
-		label: 'Reservas',
+		labelKey: 'nav.reservations',
 		icon: '/icons/reservations.svg',
 		iconSize: { w: 18, h: 20 },
 	},
 ];
 
-export function Sidebar() {
+type Props = {
+	onOpenSettings: () => void;
+};
+
+export function Sidebar({ onOpenSettings }: Props) {
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const isAdmin = user?.role === 'Admin';
 	const navItems = isAdmin ? adminNavItems : operatorNavItems;
 	const textSize = isAdmin ? 'text-base' : 'text-sm';
@@ -127,7 +133,7 @@ export function Sidebar() {
 						>
 							<>
 								<NavIcon src={item.icon} w={w} h={h} />
-								<span>{item.label}</span>
+								<span>{t(item.labelKey)}</span>
 							</>
 						</NavLink>
 					);
@@ -135,21 +141,18 @@ export function Sidebar() {
 			</nav>
 
 			<div className="flex flex-col px-2 pb-2">
-				<NavLink
-					to="/settings"
-					className={({ isActive }) =>
-						cn(
-							'flex items-center gap-3 px-3 py-[10px] rounded-[8px] mb-2 transition-colors',
-							textSize,
-							isActive
-								? 'bg-[rgba(28,200,168,0.12)] border-r-2 border-[#4ce4c3] text-[#4ce4c3] font-bold'
-								: 'text-[#bbcac4] font-normal hover:bg-[rgba(255,255,255,0.04)]',
-						)
-					}
+				<button
+					type="button"
+					onClick={onOpenSettings}
+					className={cn(
+						'flex w-full items-center gap-3 px-3 py-[10px] transition-colors',
+						textSize,
+						'rounded-[8px] text-[#bbcac4] font-normal hover:bg-[rgba(255,255,255,0.04)]',
+					)}
 				>
 					<NavIcon src="/icons/settings.svg" w={20} h={20} />
-					<span>Configurações</span>
-				</NavLink>
+					<span>{t('nav.settings')}</span>
+				</button>
 
 				<div className="border-t border-[#2a2a2a] pt-3">
 					{isAdmin ? (
@@ -192,7 +195,7 @@ export function Sidebar() {
 						className="w-full justify-start gap-2 text-[#e24b4a] hover:bg-[rgba(226,75,74,0.08)] hover:text-[#e24b4a] px-3 h-9 rounded-[8px]"
 					>
 						<NavIcon src="/icons/logout.svg" w={14} h={14} />
-						<span className={textSize}>Logout</span>
+						<span className={textSize}>{t('nav.logout')}</span>
 					</Button>
 				</div>
 			</div>

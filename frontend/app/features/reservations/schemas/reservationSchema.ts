@@ -1,14 +1,21 @@
+import type { TFunction } from 'i18next';
 import { z } from 'zod';
 
-export const createReservationSchema = z.object({
-	productId: z.string().min(1, 'Selecione um produto'),
-	warehouseId: z.string().min(1, 'Selecione um armazém'),
-	quantity: z
-		.number({ message: 'Quantidade mínima é 1' })
-		.int('Quantidade deve ser um número inteiro')
-		.min(1, 'Quantidade mínima é 1'),
-});
+export type CreateReservationFormValues = {
+	productId: string;
+	warehouseId: string;
+	quantity: number;
+};
 
-export type CreateReservationFormValues = z.infer<
-	typeof createReservationSchema
->;
+export function createReservationSchema(t: TFunction) {
+	return z.object({
+		productId: z.string().min(1, t('reservations.validation.selectProduct')),
+		warehouseId: z
+			.string()
+			.min(1, t('reservations.validation.selectWarehouse')),
+		quantity: z
+			.number({ message: t('reservations.validation.quantityMin') })
+			.int(t('reservations.validation.quantityInteger'))
+			.min(1, t('reservations.validation.quantityMin')),
+	});
+}

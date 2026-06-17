@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { AlertCircle, RotateCw } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
@@ -35,6 +36,8 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 	const createMutation = useCreateProduct();
 	const updateMutation = useUpdateProduct();
 	const mutation = isEditing ? updateMutation : createMutation;
+	const { t, i18n } = useTranslation();
+	const schema = useMemo(() => createProductSchema(t), [i18n.language]);
 
 	const {
 		register,
@@ -45,7 +48,7 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 		reset,
 		formState: { errors },
 	} = useForm<CreateProductFormValues>({
-		resolver: zodResolver(createProductSchema),
+		resolver: zodResolver(schema),
 		defaultValues: {
 			sku: '',
 			name: '',
@@ -95,10 +98,10 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 						isActive: values.isActive,
 					},
 				});
-				toast.success('Produto atualizado com sucesso.');
+				toast.success(t('products.toast.updateSuccess'));
 				handleCancel();
 			} catch {
-				toast.error('Erro ao atualizar produto. Tente novamente.');
+				toast.error(t('products.toast.updateError'));
 			}
 		} else {
 			try {
@@ -108,13 +111,13 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 					description: values.description || undefined,
 					isActive: values.isActive,
 				});
-				toast.success('Produto criado com sucesso.');
+				toast.success(t('products.toast.createSuccess'));
 				handleCancel();
 			} catch (err) {
 				if (axios.isAxiosError(err) && err.response?.status === 409) {
-					setError('sku', { message: 'SKU já cadastrado no sistema.' });
+					setError('sku', { message: t('products.validation.skuDuplicate') });
 				} else {
-					toast.error('Erro ao criar produto. Tente novamente.');
+					toast.error(t('products.toast.createError'));
 				}
 			}
 		}
@@ -130,7 +133,9 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 			<SheetContent className="bg-[#1e1e1e] px-0 pb-0">
 				<SheetHeader className="px-[20px] pt-[4px] pb-[17px] border-b border-[#2a2a2a]">
 					<SheetTitle className="text-[#f0f0f0] text-[24px] font-semibold leading-[31.2px]">
-						{isEditing ? 'Editar Produto' : 'Novo Produto'}
+						{isEditing
+							? t('products.modal.editTitle')
+							: t('products.modal.createTitle')}
 					</SheetTitle>
 				</SheetHeader>
 
@@ -140,7 +145,8 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 				>
 					<div className="flex flex-col gap-[4px]">
 						<Label className="text-[#f0f0f0] text-[12px] leading-[16.8px]">
-							SKU <span className="text-[#e24b4a]">*</span>
+							{t('products.modal.skuLabel')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</Label>
 						<div className="relative">
 							<Input
@@ -157,7 +163,7 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 										<Button
 											type="button"
 											variant="ghost"
-											aria-label="Gerar SKU"
+											aria-label={t('products.modal.generateSku')}
 											onClick={handleGenerateSku}
 											className="text-[#a0a0a0] hover:text-[#f0f0f0]"
 										>
@@ -176,11 +182,12 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 
 					<div className="flex flex-col gap-[4px]">
 						<Label className="text-[#f0f0f0] text-[12px] leading-[16.8px]">
-							Nome do Produto <span className="text-[#e24b4a]">*</span>
+							{t('products.modal.nameLabel')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</Label>
 						<Input
 							{...register('name')}
-							placeholder="Ex: Transformador 500kVA"
+							placeholder={t('products.modal.namePlaceholder')}
 							className={`bg-[#161616] border ${errors.name ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'}`}
 						/>
 						{errors.name && (
@@ -192,11 +199,11 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 
 					<div className="flex flex-col gap-[4px]">
 						<Label className="text-[#f0f0f0] text-[12px] leading-[16.8px]">
-							Descrição
+							{t('products.modal.descriptionLabel')}
 						</Label>
 						<Textarea
 							{...register('description')}
-							placeholder="Detalhes técnicos do produto..."
+							placeholder={t('products.modal.descriptionPlaceholder')}
 							className="bg-[#161616] border border-[#2a2a2a] resize-none"
 						/>
 					</div>
@@ -205,10 +212,10 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 						<div className="flex items-center justify-between">
 							<div className="flex flex-col gap-[2px]">
 								<span className="text-[#f0f0f0] text-[14px]">
-									Produto Ativo
+									{t('products.modal.activeLabel')}
 								</span>
 								<span className="text-[#a0a0a0] text-[12px]">
-									Disponível para reservas e inventário
+									{t('products.modal.activeDescription')}
 								</span>
 							</div>
 							<Controller
@@ -231,14 +238,14 @@ export function ProductEditBottomSheet({ open, onClose, editProduct }: Props) {
 							onClick={handleCancel}
 							className="bg-[#161616] border border-[#2a2a2a] text-[#f0f0f0] hover:bg-[#2a2a2a]"
 						>
-							Cancelar
+							{t('common.cancel')}
 						</Button>
 						<Button
 							type="submit"
 							disabled={mutation.isPending}
 							className="bg-[#1cc8a8] text-[#0a3d34] hover:bg-[#4ce4c3] disabled:opacity-50"
 						>
-							{isEditing ? 'Salvar Alterações' : 'Criar Produto'}
+							{isEditing ? t('common.save') : t('products.modal.createButton')}
 						</Button>
 					</SheetFooter>
 				</form>

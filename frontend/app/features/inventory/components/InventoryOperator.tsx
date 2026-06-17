@@ -1,8 +1,10 @@
 import { Info, Plus } from 'lucide-react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
+import i18n from '~/i18n/config';
 import {
 	useInventory,
 	useProducts,
@@ -30,13 +32,13 @@ const STOCK_BADGE: Record<
 		dot: 'bg-[#4ce4c3]',
 		text: 'text-[#4ce4c3]',
 	},
-	Atenção: {
+	Warning: {
 		bg: 'bg-[rgba(239,159,39,0.15)]',
 		border: 'border-[rgba(239,159,39,0.3)]',
 		dot: 'bg-[#ef9f27]',
 		text: 'text-[#ef9f27]',
 	},
-	Crítico: {
+	Critical: {
 		bg: 'bg-[rgba(226,75,74,0.15)]',
 		border: 'border-[rgba(226,75,74,0.3)]',
 		dot: 'bg-[#e24b4a]',
@@ -80,6 +82,7 @@ export function InventoryOperator() {
 
 	const isLoading = invLoading || prodLoading || whLoading;
 	const isError = invError || prodError || whError;
+	const { t } = useTranslation();
 
 	const refetchAll = () => {
 		refetchInv();
@@ -114,22 +117,22 @@ export function InventoryOperator() {
 	if (isError) {
 		return (
 			<div className="p-[32px] flex flex-col items-center justify-center gap-4 mt-16 text-center">
-				<p className="text-[#a0a0a0] text-sm">
-					Não foi possível carregar o inventário.
-				</p>
+				<p className="text-[#a0a0a0] text-sm">{t('inventory.loadError')}</p>
 				<Button variant="outline" onClick={refetchAll}>
-					Tentar novamente
+					{t('common.retry')}
 				</Button>
 			</div>
 		);
 	}
+
+	const locale = i18n.language === 'pt-BR' ? 'pt-BR' : 'en-US';
 
 	return (
 		<div className="p-4 md:p-[32px] flex flex-col gap-4 md:gap-[24px]">
 			<div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-0 md:pb-[8px]">
 				<div className="flex flex-col">
 					<h1 className="text-[#f0f0f0] text-[30px] font-bold leading-[36px]">
-						Inventário disponível
+						{t('inventory.availableTitle')}
 					</h1>
 				</div>
 				<Link
@@ -137,22 +140,21 @@ export function InventoryOperator() {
 					className="hidden md:flex bg-[#1cc8a8] text-[#0a3d34] rounded-[10px] px-[24px] py-[12px] items-center gap-[8px] text-[14px] font-semibold self-start md:self-auto"
 				>
 					<Plus size={14} />
-					Criar Reserva
+					{t('inventory.createReservation')}
 				</Link>
 			</div>
 
 			<div className="bg-[rgba(55,138,221,0.1)] border border-[rgba(55,138,221,0.3)] rounded-[8px] p-[17px] flex gap-[12px] items-start">
 				<Info size={20} className="text-[#378add] shrink-0 mt-[1px]" />
 				<span className="text-[#f0f0f0] text-[14px] leading-[21px]">
-					Visualização apenas. Para ajustes contacte o administrador.
+					{t('inventory.readOnlyNotice')}
 				</span>
 			</div>
 
-			{/* Mobile card list */}
 			<div className="md:hidden flex flex-col gap-3">
 				{rows.length === 0 ? (
 					<p className="text-[#a0a0a0] text-sm text-center py-8">
-						Nenhum item encontrado.
+						{t('inventory.noItems')}
 					</p>
 				) : (
 					rows.map((row) => {
@@ -174,11 +176,13 @@ export function InventoryOperator() {
 									</div>
 									<div className="flex flex-col items-end shrink-0">
 										<span
-											className={`text-[20px] font-bold leading-[30px] ${status === 'Crítico' ? 'text-[#e24b4a]' : 'text-[#4ce4c3]'}`}
+											className={`text-[20px] font-bold leading-[30px] ${status === 'Critical' ? 'text-[#e24b4a]' : 'text-[#4ce4c3]'}`}
 										>
-											{row.quantity.toLocaleString('pt-BR')}
+											{row.quantity.toLocaleString(locale)}
 										</span>
-										<span className="text-[#a0a0a0] text-[12px]">Unidades</span>
+										<span className="text-[#a0a0a0] text-[12px]">
+											{t('inventory.units')}
+										</span>
 									</div>
 								</div>
 								<div className="flex items-center justify-between">
@@ -189,9 +193,9 @@ export function InventoryOperator() {
 										className={`inline-flex items-center h-[22.8px] rounded-[6px] px-[8px] border ${badge.bg} ${badge.border} shrink-0`}
 									>
 										<span
-											className={`text-[12px] leading-[16.8px] ${badge.text}`}
+											className={`text-[12px] leading-[16.8px] uppercase ${badge.text}`}
 										>
-											{status.toUpperCase()}
+											{t(`inventory.stockStatus.${status}`)}
 										</span>
 									</div>
 								</div>
@@ -201,7 +205,6 @@ export function InventoryOperator() {
 				)}
 			</div>
 
-			{/* Mobile FAB */}
 			<Link
 				to="/reservations"
 				className="md:hidden fixed bottom-[80px] right-[16px] z-10 bg-[#1cc8a8] rounded-full size-[56px] flex items-center justify-center shadow-lg"
@@ -209,25 +212,24 @@ export function InventoryOperator() {
 				<Plus size={16} className="text-[#004e40]" />
 			</Link>
 
-			{/* Desktop table */}
 			<div className="hidden md:block bg-[#161616] border border-[#2a2a2a] rounded-[8px] overflow-hidden w-full">
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="bg-[#1e1e1e] border-b border-[#2a2a2a]">
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[1.1px] uppercase px-[16px] py-[12px] text-left">
-								PRODUTO
+								{t('inventory.table.product')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[1.1px] uppercase px-[16px] py-[12px] text-left">
-								SKU
+								{t('inventory.table.sku')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[1.1px] uppercase px-[16px] py-[12px] text-left">
-								ARMAZÉM
+								{t('inventory.table.warehouse')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[1.1px] uppercase px-[16px] py-[12px] text-right">
-								DISPONÍVEL
+								{t('inventory.table.available')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[1.1px] uppercase px-[16px] py-[12px] text-left">
-								STATUS ESTOQUE
+								{t('inventory.table.stockStatus')}
 							</th>
 						</tr>
 					</thead>
@@ -238,7 +240,7 @@ export function InventoryOperator() {
 									colSpan={5}
 									className="px-[16px] py-[13px] text-center text-[#a0a0a0] text-[14px]"
 								>
-									Nenhum item encontrado.
+									{t('inventory.noItems')}
 								</td>
 							</tr>
 						) : (
@@ -257,7 +259,7 @@ export function InventoryOperator() {
 											{row.warehouseName}
 										</td>
 										<td className="px-[16px] py-[13px] text-[#f0f0f0] text-[14px] font-medium text-right">
-											{row.quantity.toLocaleString('pt-BR')}
+											{row.quantity.toLocaleString(locale)}
 										</td>
 										<td className="px-[16px] py-[12.5px]">
 											<div
@@ -269,7 +271,7 @@ export function InventoryOperator() {
 												<span
 													className={`text-[12px] leading-[16.8px] ${badge.text}`}
 												>
-													{status}
+													{t(`inventory.stockStatus.${status}`)}
 												</span>
 											</div>
 										</td>

@@ -1,18 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { AlertTriangle, X } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Button } from '~/components/ui/button';
 import { useAdjustInventory } from '../hooks/useInventory';
 
-const schema = z.object({
-	quantity: z
-		.number()
-		.int('Deve ser número inteiro')
-		.min(0, 'Quantidade não pode ser negativa'),
-});
-type FormValues = z.infer<typeof schema>;
+type FormValues = { quantity: number };
 
 export type ModalItem = {
 	id: string;
@@ -31,6 +27,19 @@ type Props = {
 
 export function AdjustInventoryModal({ item, onClose }: Props) {
 	const mutation = useAdjustInventory();
+	const { t, i18n } = useTranslation();
+
+	const schema = useMemo(
+		() =>
+			z.object({
+				quantity: z
+					.number()
+					.int(t('inventory.validation.mustBeInteger'))
+					.min(0, t('inventory.validation.noNegative')),
+			}),
+		[i18n.language],
+	);
+
 	const {
 		register,
 		handleSubmit,
@@ -56,7 +65,7 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 						err.response?.data?.error === 'NEGATIVE_QUANTITY'
 					) {
 						setError('quantity', {
-							message: 'Quantidade não pode ser negativa',
+							message: t('inventory.validation.noNegative'),
 						});
 					}
 				},
@@ -88,7 +97,7 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 			>
 				<div className="flex justify-between items-center pb-[17px] border-b border-[#2a2a2a] mb-[20px]">
 					<h2 className="text-[#f0f0f0] text-[24px] font-semibold leading-[31.2px]">
-						Ajustar Inventário
+						{t('inventory.adjustModal.title')}
 					</h2>
 					<Button
 						variant="ghost"
@@ -106,7 +115,7 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 				>
 					<div className="flex flex-col gap-[4px]">
 						<label className="text-[#a0a0a0] text-[12px] leading-[16.8px]">
-							Produto
+							{t('inventory.adjustModal.product')}
 						</label>
 						<div className="bg-[#1c1b1b] border border-[#2a2a2a] rounded-[10px] opacity-70 px-[13px] py-[9px] text-[#f0f0f0] text-[14px]">
 							{item.productName}
@@ -115,7 +124,7 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 
 					<div className="flex flex-col gap-[4px]">
 						<label className="text-[#a0a0a0] text-[12px] leading-[16.8px]">
-							SKU
+							{t('inventory.adjustModal.sku')}
 						</label>
 						<div className="bg-[#1c1b1b] border border-[#2a2a2a] rounded-[10px] opacity-70 px-[13px] py-[9px] text-[#a0a0a0] text-[12px]">
 							{item.productSku}
@@ -124,7 +133,7 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 
 					<div className="flex flex-col gap-[4px]">
 						<label className="text-[#a0a0a0] text-[12px] leading-[16.8px]">
-							Armazém
+							{t('inventory.adjustModal.warehouse')}
 						</label>
 						<div className="bg-[#1c1b1b] border border-[#2a2a2a] rounded-[10px] opacity-70 px-[13px] py-[9px] text-[#f0f0f0] text-[14px]">
 							{item.warehouseName}
@@ -133,7 +142,9 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 
 					<div className="flex gap-[24px] items-start pt-[24px]">
 						<div className="bg-[#161616] border border-[#2a2a2a] rounded-[8px] w-[132px] p-[17px] flex flex-col items-center gap-[4px] shrink-0">
-							<span className="text-[#a0a0a0] text-[12px]">Qtd. Atual</span>
+							<span className="text-[#a0a0a0] text-[12px]">
+								{t('inventory.adjustModal.currentQty')}
+							</span>
 							<span
 								className={`text-[30px] font-bold leading-[36px] ${item.quantity < 10 ? 'text-[#e24b4a]' : 'text-[#f0f0f0]'}`}
 							>
@@ -143,7 +154,7 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 
 						<div className="flex flex-col gap-[4px] flex-1">
 							<label className="text-[#f0f0f0] text-[12px] leading-[16.8px]">
-								Nova quantidade
+								{t('inventory.adjustModal.newQty')}
 							</label>
 							<input
 								type="number"
@@ -162,10 +173,10 @@ export function AdjustInventoryModal({ item, onClose }: Props) {
 
 					<div className="flex justify-end gap-[12px] pt-[17px] border-t border-[#2a2a2a] mt-[16px]">
 						<Button variant="outline" onClick={onClose}>
-							Cancelar
+							{t('common.cancel')}
 						</Button>
 						<Button type="submit" disabled={mutation.isPending}>
-							Salvar Ajuste
+							{t('inventory.adjustModal.saveAdjust')}
 						</Button>
 					</div>
 				</form>

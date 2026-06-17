@@ -1,7 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Save, X } from 'lucide-react';
+import { Save } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import {
 	Sheet,
@@ -47,6 +49,8 @@ function MaskIcon({ src, w, h }: { src: string; w: number; h: number }) {
 
 export function NewWarehouseSheet({ open, onClose }: Props) {
 	const mutation = useCreateWarehouse();
+	const { t, i18n } = useTranslation();
+	const schema = useMemo(() => createWarehouseSchema(t), [i18n.language]);
 
 	const {
 		register,
@@ -56,7 +60,7 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 		reset,
 		formState: { errors },
 	} = useForm<CreateWarehouseFormValues>({
-		resolver: zodResolver(createWarehouseSchema),
+		resolver: zodResolver(schema),
 		defaultValues: {
 			name: '',
 			location: '',
@@ -76,10 +80,10 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 				location: values.location,
 				isActive: values.isActive,
 			});
-			toast.success('Armazem criado com sucesso.');
+			toast.success(t('warehouses.toast.createSuccess'));
 			handleCancel();
 		} catch {
-			toast.error('Erro ao criar armazem. Tente novamente.');
+			toast.error(t('warehouses.toast.createError'));
 		}
 	};
 
@@ -93,7 +97,7 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 			<SheetContent className="bg-[#1e1e1e] px-0 pb-0 min-h-[60vh]">
 				<SheetHeader className="px-[20px] pt-[4px] pb-[17px] border-b border-[#2a2a2a]">
 					<SheetTitle className="text-[#f0f0f0] text-[24px] font-semibold leading-[31.2px]">
-						Novo Armazem
+						{t('warehouses.modalTitle')}
 					</SheetTitle>
 				</SheetHeader>
 
@@ -103,11 +107,12 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 				>
 					<div className="flex flex-col gap-[4px]">
 						<label className="text-[#a0a0a0] text-[12px]">
-							Nome do Armazem <span className="text-[#e24b4a]">*</span>
+							{t('warehouses.warehouseName')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</label>
 						<input
 							{...register('name')}
-							placeholder="Ex: Hub Leste - RJ"
+							placeholder={t('warehouses.warehouseNamePlaceholder')}
 							className={`bg-[#161616] border rounded-[10px] p-[13px] text-[14px] text-[#f0f0f0] w-full outline-none ${errors.name ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'}`}
 						/>
 						{errors.name && (
@@ -119,7 +124,8 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 
 					<div className="flex flex-col gap-[4px]">
 						<label className="text-[#a0a0a0] text-[12px]">
-							Localizacao Fisica <span className="text-[#e24b4a]">*</span>
+							{t('warehouses.physicalLocation')}{' '}
+							<span className="text-[#e24b4a]">*</span>
 						</label>
 						<div className="relative">
 							<div className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[#606060]">
@@ -127,7 +133,7 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 							</div>
 							<input
 								{...register('location')}
-								placeholder="Cidade, Estado"
+								placeholder={t('warehouses.locationPlaceholder')}
 								className={`bg-[#161616] border rounded-[10px] pl-[41px] pr-[13px] py-[13px] text-[14px] text-[#f0f0f0] w-full outline-none ${errors.location ? 'border-[#e24b4a]' : 'border-[#2a2a2a]'}`}
 							/>
 						</div>
@@ -142,9 +148,11 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 
 					<div className="flex items-center justify-between">
 						<div className="flex flex-col gap-0.5">
-							<span className="text-[#f0f0f0] text-[14px]">Status Inicial</span>
+							<span className="text-[#f0f0f0] text-[14px]">
+								{t('warehouses.initialStatus')}
+							</span>
 							<span className="text-[#a0a0a0] text-[12px]">
-								Definir armazem como operacional imediatamente.
+								{t('warehouses.initialStatusSubtitle')}
 							</span>
 						</div>
 						<div className="flex items-center gap-3">
@@ -153,7 +161,7 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 								onCheckedChange={(v) => setValue('isActive', v)}
 							/>
 							<span className="text-[#1cc8a8] text-[14px] font-medium">
-								{watch('isActive') ? 'Ativo' : 'Inativo'}
+								{watch('isActive') ? t('common.active') : t('common.inactive')}
 							</span>
 						</div>
 					</div>
@@ -165,7 +173,7 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 							onClick={handleCancel}
 							className="w-full bg-[#161616] border border-[#2a2a2a] text-[#f0f0f0] hover:bg-[#2a2a2a]"
 						>
-							Cancelar
+							{t('common.cancel')}
 						</Button>
 						<Button
 							type="submit"
@@ -173,7 +181,7 @@ export function NewWarehouseSheet({ open, onClose }: Props) {
 							className="w-full bg-[#1cc8a8] text-[#004e40] hover:bg-[#4ce4c3] disabled:bg-[#353534] disabled:text-[#a0a0a0]"
 						>
 							<Save size={14} />
-							Salvar Armazem
+							{t('warehouses.saveWarehouse')}
 						</Button>
 					</SheetFooter>
 				</form>

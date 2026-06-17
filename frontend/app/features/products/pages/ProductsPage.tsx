@@ -1,5 +1,6 @@
 import { ChevronRight, Search } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Switch } from '~/components/ui/switch';
@@ -11,18 +12,19 @@ import { useProducts } from '../hooks/useProducts';
 import type { Product } from '../services/productsApi';
 
 function ProductStatusBadge({ isActive }: { isActive: boolean }) {
+	const { t } = useTranslation();
 	const styles = isActive
 		? {
 				bg: 'bg-[rgba(28,200,168,0.15)]',
 				border: 'border-[rgba(28,200,168,0.3)]',
 				text: 'text-[#1cc8a8]',
-				label: 'ATIVO',
+				label: t('products.status.activeLabel'),
 			}
 		: {
-				bg: 'bg-[#1e1e1e]',
-				border: 'border-[#2a2a2a]',
-				text: 'text-[#a0a0a0]',
-				label: 'INATIVO',
+				bg: 'bg-[rgba(226,75,74,0.15)]',
+				border: 'border-[rgba(226,75,74,0.3)]',
+				text: 'text-[#e24b4a]',
+				label: t('products.status.inactiveLabel'),
 			};
 	return (
 		<span
@@ -35,6 +37,7 @@ function ProductStatusBadge({ isActive }: { isActive: boolean }) {
 
 export default function ProductsPage() {
 	const { data, isLoading } = useProducts();
+	const { t } = useTranslation();
 	const [search, setSearch] = useState('');
 	const [onlyActive, setOnlyActive] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
@@ -71,13 +74,13 @@ export default function ProductsPage() {
 		<div className="flex flex-col h-full p-4 md:p-[32px] gap-4 md:gap-[32px]">
 			<div className="flex items-center justify-between">
 				<h1 className="text-[#f0f0f0] text-[28px] font-semibold leading-[36px]">
-					Produtos
+					{t('products.title')}
 				</h1>
 				<Button
 					onClick={handleOpenCreate}
 					className="bg-[rgba(28,200,168,0.15)] border border-[rgba(28,200,168,0.3)] text-[#1cc8a8] hover:bg-[rgba(28,200,168,0.25)]"
 				>
-					+ Novo Produto
+					{t('products.newProduct')}
 				</Button>
 			</div>
 
@@ -88,7 +91,7 @@ export default function ProductsPage() {
 						className="absolute left-3 top-1/2 -translate-y-1/2 text-[#606060] pointer-events-none"
 					/>
 					<Input
-						placeholder="Buscar por SKU ou Nome..."
+						placeholder={t('products.searchPlaceholder')}
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
 						className="bg-[#1e1e1e] border border-[#2a2a2a] pl-9 text-[#f0f0f0] placeholder:text-[#606060]"
@@ -99,7 +102,9 @@ export default function ProductsPage() {
 						checked={onlyActive}
 						onCheckedChange={(checked) => setOnlyActive(checked)}
 					/>
-					<span className="text-[#a0a0a0] text-[14px]">Apenas ativos</span>
+					<span className="text-[#a0a0a0] text-[14px]">
+						{t('products.onlyActive')}
+					</span>
 				</div>
 			</div>
 
@@ -107,7 +112,7 @@ export default function ProductsPage() {
 				<div className="flex flex-col gap-[8px]">
 					{filtered.length === 0 ? (
 						<p className="text-[#a0a0a0] text-sm text-center py-8">
-							Nenhum produto encontrado.
+							{t('products.noProducts')}
 						</p>
 					) : (
 						filtered.map((product) => (

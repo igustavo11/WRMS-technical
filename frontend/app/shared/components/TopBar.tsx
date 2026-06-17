@@ -1,4 +1,3 @@
-import { useLocation, useNavigate } from 'react-router';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -7,15 +6,6 @@ import {
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { useAuth } from '~/features/auth/hooks/useAuth';
-
-const routeTitles: Record<string, string> = {
-	'/': 'Dashboard',
-	'/products': 'Produtos',
-	'/warehouses': 'Armazéns',
-	'/inventory': 'Inventário',
-	'/reservations': 'Reservas',
-	'/settings': 'Configurações',
-};
 
 function formatDate(): string {
 	return new Intl.DateTimeFormat('pt-BR', {
@@ -26,16 +16,17 @@ function formatDate(): string {
 	}).format(new Date());
 }
 
-export function TopBar() {
+type Props = {
+	onOpenSettings: () => void;
+};
+
+export function TopBar({ onOpenSettings }: Props) {
 	const { user, logout } = useAuth();
-	const navigate = useNavigate();
-	const location = useLocation();
 	const isAdmin = user?.role === 'Admin';
-	const pageTitle = routeTitles[location.pathname] ?? 'WRMS';
 
 	function handleLogout() {
 		logout();
-		navigate('/login');
+		window.location.href = '/login';
 	}
 
 	return (
@@ -68,7 +59,7 @@ export function TopBar() {
 							className="w-40 bg-[#161616] border-[#2a2a2a] text-[#a0a0a0]"
 						>
 							<DropdownMenuItem
-								onClick={() => navigate('/settings')}
+								onClick={onOpenSettings}
 								className="cursor-pointer focus:bg-[rgba(28,200,168,0.12)] focus:text-[#4ce4c3]"
 							>
 								Configurações
@@ -87,21 +78,7 @@ export function TopBar() {
 			</header>
 
 			{/* Desktop Header */}
-			<header className="hidden md:flex h-16 shrink-0 bg-[#131313] border-b border-[#2a2a2a] items-center justify-between px-8 z-10">
-				<div className="flex items-center gap-4">
-					<span className="text-[#a0a0a0] text-[11px] font-medium tracking-[1.1px] uppercase select-none">
-						WRMS
-					</span>
-					{isAdmin && pageTitle && (
-						<>
-							<div className="w-px h-4 bg-[#2a2a2a]" />
-							<span className="text-[#4ce4c3] text-2xl font-semibold leading-none">
-								{pageTitle}
-							</span>
-						</>
-					)}
-				</div>
-
+			<header className="hidden md:flex h-16 shrink-0 bg-[#131313] border-b border-[#2a2a2a] items-center justify-end px-8 z-10">
 				<div className="flex items-center gap-6">
 					{isAdmin && (
 						<span className="text-[#a0a0a0] text-xs capitalize">

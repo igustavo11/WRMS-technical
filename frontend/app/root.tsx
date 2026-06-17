@@ -10,6 +10,7 @@ import {
 } from 'react-router';
 
 import { AuthProvider } from '~/features/auth/context/AuthContext';
+import '~/i18n/config';
 import type { Route } from './+types/root';
 import './app.css';
 

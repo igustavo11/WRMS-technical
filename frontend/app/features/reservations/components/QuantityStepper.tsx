@@ -1,4 +1,5 @@
 import { Minus, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import { cn } from '~/lib/utils';
 
@@ -9,6 +10,8 @@ type Props = {
 };
 
 export function QuantityStepper({ value, onChange, hasError }: Props) {
+	const { t } = useTranslation();
+
 	return (
 		<div
 			className={cn(
@@ -22,7 +25,7 @@ export function QuantityStepper({ value, onChange, hasError }: Props) {
 				onClick={() => onChange(Math.max(1, value - 1))}
 				disabled={value <= 1}
 				className="w-[44px] h-[44px] text-[#a0a0a0] hover:text-[#f0f0f0] hover:bg-[#2a2a2a] rounded-none"
-				aria-label="Diminuir quantidade"
+				aria-label={t('reservations.stepper.decrease')}
 			>
 				<Minus size={16} />
 			</Button>
@@ -39,7 +42,7 @@ export function QuantityStepper({ value, onChange, hasError }: Props) {
 				variant="ghost"
 				onClick={() => onChange(value + 1)}
 				className="w-[44px] h-[44px] text-[#a0a0a0] hover:text-[#f0f0f0] hover:bg-[#2a2a2a] rounded-none"
-				aria-label="Aumentar quantidade"
+				aria-label={t('reservations.stepper.increase')}
 			>
 				<Plus size={16} />
 			</Button>

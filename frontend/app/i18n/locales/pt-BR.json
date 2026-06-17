@@ -1,0 +1,292 @@
+{
+	"common": {
+		"cancel": "Cancelar",
+		"save": "Salvar",
+		"retry": "Tentar novamente",
+		"active": "Ativo",
+		"inactive": "Inativo",
+		"noResults": "Nenhum resultado encontrado.",
+		"actions": "Ações",
+		"status": "Status"
+	},
+	"nav": {
+		"dashboard": "Dashboard",
+		"products": "Produtos",
+		"warehouses": "Armazéns",
+		"inventory": "Inventário",
+		"reservations": "Reservas",
+		"settings": "Configurações",
+		"logout": "Sair"
+	},
+	"auth": {
+		"title": "Entrar na sua conta",
+		"subtitle": "Gerencie reservas e inventário",
+		"emailLabel": "E-mail de acesso",
+		"passwordLabel": "Senha",
+		"showPassword": "Mostrar senha",
+		"hidePassword": "Ocultar senha",
+		"submitLoading": "Entrando...",
+		"submit": "Entrar",
+		"restrictedAccess": "Acesso restrito a operadores autorizados",
+		"loginSuccess": "Login realizado com sucesso!",
+		"loginError": "Erro ao fazer login. Verifique suas credenciais.",
+		"passwordError": "Senha incorreta. Tente novamente.",
+		"validation": {
+			"emailInvalid": "Informe um e-mail válido",
+			"passwordRequired": "Informe sua senha"
+		}
+	},
+	"dashboard": {
+		"loadError": "Não foi possível carregar os dados do dashboard.",
+		"loadErrorOperator": "Não foi possível carregar os dados.",
+		"metrics": {
+			"products": "Produtos",
+			"warehouses": "Armazéns",
+			"inventory": "Estoque",
+			"activeReservations": "Reservas Ativas",
+			"active": "Ativas",
+			"createdToday": "Criadas Hoje",
+			"unitsNetwork": "Unidades em toda a rede",
+			"availableItems": "Itens disponíveis",
+			"awaitingProcessing": "Aguardando processamento",
+			"yourReservations": "Suas reservas",
+			"lastUpdated": "Última atualização agora"
+		},
+		"recentReservations": "Reservas Recentes",
+		"myRecentReservations": "Minhas Reservas Recentes",
+		"viewAll": "Ver todas",
+		"viewAllDesktop": "Ver Todas",
+		"noReservations": "Nenhuma reserva encontrada.",
+		"overview": "Visão Geral",
+		"greeting": "Bem-vindo de volta, {{name}}. Aqui está o seu resumo de hoje.",
+		"table": {
+			"id": "ID",
+			"product": "PRODUTO",
+			"warehouse": "ARMAZÉM",
+			"qty": "QTD",
+			"status": "STATUS",
+			"date": "DATA",
+			"action": "AÇÃO",
+			"reservationId": "ID Reserva",
+			"project": "Projeto",
+			"createdAt": "Data Criação",
+			"items": "Itens"
+		},
+		"cancel": "Cancelar",
+		"newReservation": {
+			"mobileTitle": "Nova Reserva",
+			"mobileSubtitle": "Inicie um novo processo de alocação de inventário.",
+			"mobileButton": "Criar Reserva",
+			"desktopTitle": "Criar Nova Reserva",
+			"desktopSubtitle": "Inicie uma nova solicitação de materiais para projetos aprovados diretamente do inventário disponível.",
+			"desktopButton": "Nova Reserva"
+		}
+	},
+	"products": {
+		"title": "Produtos",
+		"newProduct": "+ Novo Produto",
+		"searchPlaceholder": "Buscar por SKU ou Nome...",
+		"onlyActive": "Apenas ativos",
+		"noProducts": "Nenhum produto encontrado.",
+		"editTitle": "Editar Produto",
+		"newTitle": "Novo Produto",
+		"sku": "SKU",
+		"generateSku": "Gerar SKU",
+		"productName": "Nome do Produto",
+		"productNamePlaceholder": "Ex: Transformador 500kVA",
+		"description": "Descrição",
+		"descriptionPlaceholder": "Detalhes técnicos do produto...",
+		"activeToggle": "Produto Ativo",
+		"activeToggleSubtitle": "Disponível para reservas e inventário",
+		"saveChanges": "Salvar Alterações",
+		"createProduct": "Criar Produto",
+		"editProductTitle": "Editar produto",
+		"table": {
+			"sku": "SKU",
+			"name": "NOME",
+			"description": "DESCRIÇÃO",
+			"status": "STATUS",
+			"actions": "AÇÕES"
+		},
+		"status": {
+			"active": "Ativo",
+			"inactive": "Inativo",
+			"activeLabel": "ATIVO",
+			"inactiveLabel": "INATIVO"
+		},
+		"toast": {
+			"updateSuccess": "Produto atualizado com sucesso.",
+			"updateError": "Erro ao atualizar produto. Tente novamente.",
+			"createSuccess": "Produto criado com sucesso.",
+			"createError": "Erro ao criar produto. Tente novamente."
+		},
+		"modal": {
+			"editTitle": "Editar Produto",
+			"createTitle": "Novo Produto",
+			"skuLabel": "SKU",
+			"nameLabel": "Nome do Produto",
+			"namePlaceholder": "Ex: Transformador 500kVA",
+			"descriptionLabel": "Descrição",
+			"descriptionPlaceholder": "Detalhes técnicos do produto...",
+			"activeLabel": "Produto Ativo",
+			"activeDescription": "Disponível para reservas e inventário",
+			"generateSku": "Gerar SKU",
+			"createButton": "Criar Produto"
+		},
+		"validation": {
+			"skuRequired": "SKU é obrigatório",
+			"nameRequired": "Nome é obrigatório",
+			"skuDuplicate": "SKU já cadastrado no sistema."
+		}
+	},
+	"warehouses": {
+		"title": "Armazéns",
+		"subtitle": "Gerencie as localidades de estocagem e hubs logísticos.",
+		"newWarehouse": "+ Novo Armazém",
+		"noWarehouses": "Nenhum armazém cadastrado.",
+		"loadError": "Não foi possível carregar os armazéns.",
+		"modalTitle": "Novo Armazém",
+		"warehouseName": "Nome do Armazém",
+		"warehouseNamePlaceholder": "Ex: Hub Leste - RJ",
+		"physicalLocation": "Localização Física",
+		"locationPlaceholder": "Cidade, Estado",
+		"initialStatus": "Status Inicial",
+		"initialStatusSubtitle": "Definir armazém como operacional imediatamente.",
+		"saveWarehouse": "Salvar Armazém",
+		"createWarehouse": "Criar Armazém",
+		"card": {
+			"uniqueProducts": "Produtos Únicos",
+			"totalUnits": "Total Unidades",
+			"viewInventory": "Ver Inventário"
+		},
+		"status": {
+			"active": "ATIVO",
+			"inactive": "INATIVO"
+		},
+		"toast": {
+			"createSuccess": "Armazém criado com sucesso.",
+			"createError": "Erro ao criar armazém. Tente novamente."
+		},
+		"validation": {
+			"nameRequired": "Nome do armazém é obrigatório",
+			"locationRequired": "Localização é obrigatória"
+		}
+	},
+	"inventory": {
+		"title": "Inventário",
+		"availableTitle": "Inventário disponível",
+		"createReservation": "Criar Reserva",
+		"readOnlyNotice": "Visualização apenas. Para ajustes contacte o administrador.",
+		"searchPlaceholder": "Buscar SKU...",
+		"allWarehouses": "Todos Armazéns",
+		"allProducts": "Todos Produtos",
+		"noItems": "Nenhum item encontrado.",
+		"adjust": "Ajustar",
+		"units": "Unidades",
+		"loadError": "Não foi possível carregar o inventário.",
+		"table": {
+			"product": "PRODUTO",
+			"sku": "SKU",
+			"warehouse": "ARMAZÉM",
+			"quantity": "QUANTIDADE",
+			"lastUpdate": "ÚLTIMA ATUALIZAÇÃO",
+			"action": "AÇÃO",
+			"available": "DISPONÍVEL",
+			"stockStatus": "STATUS ESTOQUE"
+		},
+		"adjustModal": {
+			"title": "Ajustar Inventário",
+			"product": "Produto",
+			"sku": "SKU",
+			"warehouse": "Armazém",
+			"currentQty": "Qtd. Atual",
+			"newQty": "Nova quantidade",
+			"saveAdjust": "Salvar Ajuste"
+		},
+		"stockStatus": {
+			"Normal": "Normal",
+			"Warning": "Atenção",
+			"Critical": "Crítico"
+		},
+		"toast": {
+			"adjustSuccess": "Inventário atualizado.",
+			"adjustError": "Não foi possível ajustar o inventário."
+		},
+		"validation": {
+			"mustBeInteger": "Deve ser número inteiro",
+			"noNegative": "Quantidade não pode ser negativa"
+		}
+	},
+	"reservations": {
+		"title": "Reservas",
+		"newReservation": "+ Nova Reserva",
+		"noReservations": "Nenhuma reserva encontrada.",
+		"statusAll": "Todas",
+		"cancel": "Cancelar",
+		"filters": {
+			"status": "Status:",
+			"warehouse": "Armazém:",
+			"from": "De:",
+			"to": "Até:",
+			"clearFilters": "Limpar Filtros"
+		},
+		"table": {
+			"id": "ID",
+			"product": "Produto",
+			"warehouse": "Armazém",
+			"qty": "Qtd",
+			"status": "Status",
+			"createdAt": "Criado em",
+			"action": "Ação"
+		},
+		"status": {
+			"Pending": "Pendente",
+			"Confirmed": "Confirmado",
+			"Cancelled": "Cancelado"
+		},
+		"modal": {
+			"title": "Nova Reserva",
+			"product": "Produto",
+			"selectProduct": "Selecionar produto",
+			"selectProductPlaceholder": "Selecione um produto",
+			"warehouse": "Armazém",
+			"selectWarehouse": "Selecionar armazém",
+			"selectWarehousePlaceholder": "Selecione um armazém",
+			"quantity": "Quantidade",
+			"available": "Disponível",
+			"availableUnits": "{{count}} unidades",
+			"submit": "Criar Reserva",
+			"insufficientStock": "Estoque insuficiente. A quantidade solicitada excede o estoque disponível para este armazém."
+		},
+		"card": {
+			"qty": "Qtd: {{count}} unidades"
+		},
+		"stepper": {
+			"decrease": "Diminuir quantidade",
+			"increase": "Aumentar quantidade"
+		},
+		"toast": {
+			"createSuccess": "Reserva criada com sucesso.",
+			"inactiveProduct": "Produto inativo. Não é possível criar a reserva.",
+			"inactiveWarehouse": "Armazém inativo. Não é possível criar a reserva.",
+			"createError": "Erro ao criar reserva. Tente novamente.",
+			"cancelSuccess": "Reserva cancelada com sucesso.",
+			"cancelError": "Não foi possível cancelar a reserva."
+		},
+		"validation": {
+			"selectProduct": "Selecione um produto",
+			"selectWarehouse": "Selecione um armazém",
+			"quantityMin": "Quantidade mínima é 1",
+			"quantityInteger": "Quantidade deve ser um número inteiro"
+		}
+	},
+	"settings": {
+		"title": "Configurações",
+		"language": {
+			"title": "Idioma",
+			"subtitle": "Escolha o idioma da interface",
+			"ptBR": "Português (BR)",
+			"en": "English"
+		}
+	}
+}

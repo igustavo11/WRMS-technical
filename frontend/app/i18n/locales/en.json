@@ -1,0 +1,292 @@
+{
+	"common": {
+		"cancel": "Cancel",
+		"save": "Save",
+		"retry": "Try again",
+		"active": "Active",
+		"inactive": "Inactive",
+		"noResults": "No results found.",
+		"actions": "Actions",
+		"status": "Status"
+	},
+	"nav": {
+		"dashboard": "Dashboard",
+		"products": "Products",
+		"warehouses": "Warehouses",
+		"inventory": "Inventory",
+		"reservations": "Reservations",
+		"settings": "Settings",
+		"logout": "Logout"
+	},
+	"auth": {
+		"title": "Sign in to your account",
+		"subtitle": "Manage reservations and inventory",
+		"emailLabel": "Access email",
+		"passwordLabel": "Password",
+		"showPassword": "Show password",
+		"hidePassword": "Hide password",
+		"submitLoading": "Signing in...",
+		"submit": "Sign in",
+		"restrictedAccess": "Restricted access to authorized operators",
+		"loginSuccess": "Login successful!",
+		"loginError": "Failed to sign in. Please check your credentials.",
+		"passwordError": "Incorrect password. Please try again.",
+		"validation": {
+			"emailInvalid": "Please enter a valid email",
+			"passwordRequired": "Please enter your password"
+		}
+	},
+	"dashboard": {
+		"loadError": "Could not load dashboard data.",
+		"loadErrorOperator": "Could not load data.",
+		"metrics": {
+			"products": "Products",
+			"warehouses": "Warehouses",
+			"inventory": "Inventory",
+			"activeReservations": "Active Reservations",
+			"active": "Active",
+			"createdToday": "Created Today",
+			"unitsNetwork": "Units across the network",
+			"availableItems": "Available items",
+			"awaitingProcessing": "Awaiting processing",
+			"yourReservations": "Your reservations",
+			"lastUpdated": "Last updated just now"
+		},
+		"recentReservations": "Recent Reservations",
+		"myRecentReservations": "My Recent Reservations",
+		"viewAll": "View all",
+		"viewAllDesktop": "View All",
+		"noReservations": "No reservations found.",
+		"overview": "Overview",
+		"greeting": "Welcome back, {{name}}. Here's your summary for today.",
+		"table": {
+			"id": "ID",
+			"product": "PRODUCT",
+			"warehouse": "WAREHOUSE",
+			"qty": "QTY",
+			"status": "STATUS",
+			"date": "DATE",
+			"action": "ACTION",
+			"reservationId": "Reservation ID",
+			"project": "Project",
+			"createdAt": "Created At",
+			"items": "Items"
+		},
+		"cancel": "Cancel",
+		"newReservation": {
+			"mobileTitle": "New Reservation",
+			"mobileSubtitle": "Start a new inventory allocation process.",
+			"mobileButton": "Create Reservation",
+			"desktopTitle": "Create New Reservation",
+			"desktopSubtitle": "Start a new material request for approved projects directly from available inventory.",
+			"desktopButton": "New Reservation"
+		}
+	},
+	"products": {
+		"title": "Products",
+		"newProduct": "+ New Product",
+		"searchPlaceholder": "Search by SKU or Name...",
+		"onlyActive": "Active only",
+		"noProducts": "No products found.",
+		"editTitle": "Edit Product",
+		"newTitle": "New Product",
+		"sku": "SKU",
+		"generateSku": "Generate SKU",
+		"productName": "Product Name",
+		"productNamePlaceholder": "Ex: Transformer 500kVA",
+		"description": "Description",
+		"descriptionPlaceholder": "Product technical details...",
+		"activeToggle": "Active Product",
+		"activeToggleSubtitle": "Available for reservations and inventory",
+		"saveChanges": "Save Changes",
+		"createProduct": "Create Product",
+		"editProductTitle": "Edit product",
+		"table": {
+			"sku": "SKU",
+			"name": "NAME",
+			"description": "DESCRIPTION",
+			"status": "STATUS",
+			"actions": "ACTIONS"
+		},
+		"status": {
+			"active": "Active",
+			"inactive": "Inactive",
+			"activeLabel": "ACTIVE",
+			"inactiveLabel": "INACTIVE"
+		},
+		"toast": {
+			"updateSuccess": "Product updated successfully.",
+			"updateError": "Failed to update product. Please try again.",
+			"createSuccess": "Product created successfully.",
+			"createError": "Failed to create product. Please try again."
+		},
+		"modal": {
+			"editTitle": "Edit Product",
+			"createTitle": "New Product",
+			"skuLabel": "SKU",
+			"nameLabel": "Product Name",
+			"namePlaceholder": "Ex: Transformer 500kVA",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Product technical details...",
+			"activeLabel": "Active Product",
+			"activeDescription": "Available for reservations and inventory",
+			"generateSku": "Generate SKU",
+			"createButton": "Create Product"
+		},
+		"validation": {
+			"skuRequired": "SKU is required",
+			"nameRequired": "Name is required",
+			"skuDuplicate": "SKU already registered in the system."
+		}
+	},
+	"warehouses": {
+		"title": "Warehouses",
+		"subtitle": "Manage storage locations and logistics hubs.",
+		"newWarehouse": "+ New Warehouse",
+		"noWarehouses": "No warehouses registered.",
+		"loadError": "Could not load warehouses.",
+		"modalTitle": "New Warehouse",
+		"warehouseName": "Warehouse Name",
+		"warehouseNamePlaceholder": "Ex: East Hub - NY",
+		"physicalLocation": "Physical Location",
+		"locationPlaceholder": "City, State",
+		"initialStatus": "Initial Status",
+		"initialStatusSubtitle": "Set warehouse as operational immediately.",
+		"saveWarehouse": "Save Warehouse",
+		"createWarehouse": "Create Warehouse",
+		"card": {
+			"uniqueProducts": "Unique Products",
+			"totalUnits": "Total Units",
+			"viewInventory": "View Inventory"
+		},
+		"status": {
+			"active": "ACTIVE",
+			"inactive": "INACTIVE"
+		},
+		"toast": {
+			"createSuccess": "Warehouse created successfully.",
+			"createError": "Failed to create warehouse. Please try again."
+		},
+		"validation": {
+			"nameRequired": "Warehouse name is required",
+			"locationRequired": "Location is required"
+		}
+	},
+	"inventory": {
+		"title": "Inventory",
+		"availableTitle": "Available Inventory",
+		"createReservation": "Create Reservation",
+		"readOnlyNotice": "View only. For adjustments, contact the administrator.",
+		"searchPlaceholder": "Search SKU...",
+		"allWarehouses": "All Warehouses",
+		"allProducts": "All Products",
+		"noItems": "No items found.",
+		"adjust": "Adjust",
+		"units": "Units",
+		"loadError": "Could not load inventory.",
+		"table": {
+			"product": "PRODUCT",
+			"sku": "SKU",
+			"warehouse": "WAREHOUSE",
+			"quantity": "QUANTITY",
+			"lastUpdate": "LAST UPDATE",
+			"action": "ACTION",
+			"available": "AVAILABLE",
+			"stockStatus": "STOCK STATUS"
+		},
+		"adjustModal": {
+			"title": "Adjust Inventory",
+			"product": "Product",
+			"sku": "SKU",
+			"warehouse": "Warehouse",
+			"currentQty": "Current Qty.",
+			"newQty": "New quantity",
+			"saveAdjust": "Save Adjustment"
+		},
+		"stockStatus": {
+			"Normal": "Normal",
+			"Warning": "Warning",
+			"Critical": "Critical"
+		},
+		"toast": {
+			"adjustSuccess": "Inventory updated.",
+			"adjustError": "Could not adjust inventory."
+		},
+		"validation": {
+			"mustBeInteger": "Must be a whole number",
+			"noNegative": "Quantity cannot be negative"
+		}
+	},
+	"reservations": {
+		"title": "Reservations",
+		"newReservation": "+ New Reservation",
+		"noReservations": "No reservations found.",
+		"statusAll": "All",
+		"cancel": "Cancel",
+		"filters": {
+			"status": "Status:",
+			"warehouse": "Warehouse:",
+			"from": "From:",
+			"to": "To:",
+			"clearFilters": "Clear Filters"
+		},
+		"table": {
+			"id": "ID",
+			"product": "Product",
+			"warehouse": "Warehouse",
+			"qty": "Qty",
+			"status": "Status",
+			"createdAt": "Created at",
+			"action": "Action"
+		},
+		"status": {
+			"Pending": "Pending",
+			"Confirmed": "Confirmed",
+			"Cancelled": "Cancelled"
+		},
+		"modal": {
+			"title": "New Reservation",
+			"product": "Product",
+			"selectProduct": "Select product",
+			"selectProductPlaceholder": "Select a product",
+			"warehouse": "Warehouse",
+			"selectWarehouse": "Select warehouse",
+			"selectWarehousePlaceholder": "Select a warehouse",
+			"quantity": "Quantity",
+			"available": "Available",
+			"availableUnits": "{{count}} units",
+			"submit": "Create Reservation",
+			"insufficientStock": "Insufficient stock. The requested quantity exceeds available stock for this warehouse."
+		},
+		"card": {
+			"qty": "Qty: {{count}} units"
+		},
+		"stepper": {
+			"decrease": "Decrease quantity",
+			"increase": "Increase quantity"
+		},
+		"toast": {
+			"createSuccess": "Reservation created successfully.",
+			"inactiveProduct": "Inactive product. Cannot create reservation.",
+			"inactiveWarehouse": "Inactive warehouse. Cannot create reservation.",
+			"createError": "Failed to create reservation. Please try again.",
+			"cancelSuccess": "Reservation cancelled successfully.",
+			"cancelError": "Could not cancel reservation."
+		},
+		"validation": {
+			"selectProduct": "Select a product",
+			"selectWarehouse": "Select a warehouse",
+			"quantityMin": "Minimum quantity is 1",
+			"quantityInteger": "Quantity must be a whole number"
+		}
+	},
+	"settings": {
+		"title": "Settings",
+		"language": {
+			"title": "Language",
+			"subtitle": "Choose the interface language",
+			"ptBR": "Português (BR)",
+			"en": "English"
+		}
+	}
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import { useDashboard } from '~/features/dashboard/hooks/useDashboard';
@@ -20,6 +21,7 @@ function SkeletonGrid() {
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 			{Array.from({ length: 3 }).map((_, i) => (
 				<div
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton rows
 					key={i}
 					className="bg-[#161616] border border-[#2a2a2a] rounded-[8px] p-[21px] flex flex-col gap-4"
 				>
@@ -48,6 +50,7 @@ function SkeletonGrid() {
 export default function WarehousesPage() {
 	const [modalOpen, setModalOpen] = useState(false);
 	const isMobile = useIsMobile();
+	const { t } = useTranslation();
 
 	const { data: warehouses, isLoading, isError, refetch } = useWarehouses();
 	const { data: dashboardData } = useDashboard();
@@ -71,17 +74,17 @@ export default function WarehousesPage() {
 			<div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-0">
 				<div className="flex flex-col gap-1">
 					<h1 className="text-[#f0f0f0] text-[30px] font-bold leading-[36px]">
-						Armazens
+						{t('warehouses.title')}
 					</h1>
 					<p className="text-[#a0a0a0] text-[14px]">
-						Gerencio as localidades de estocagem e hubs logisticos.
+						{t('warehouses.subtitle')}
 					</p>
 				</div>
 				<Button
 					onClick={() => setModalOpen(true)}
 					className="w-full md:w-auto bg-[#1cc8a8] text-[#004e40] hover:bg-[#4ce4c3] h-[40px] px-6 rounded-[10px] text-[14px] font-semibold"
 				>
-					+ Novo Armazem
+					{t('warehouses.newWarehouse')}
 				</Button>
 			</div>
 
@@ -89,18 +92,16 @@ export default function WarehousesPage() {
 
 			{isError && (
 				<div className="flex flex-col items-center justify-center gap-4 mt-16 text-center">
-					<p className="text-[#a0a0a0] text-sm">
-						Nao foi possivel carregar os armazens.
-					</p>
+					<p className="text-[#a0a0a0] text-sm">{t('warehouses.loadError')}</p>
 					<Button variant="outline" onClick={() => refetch()}>
-						Tentar novamente
+						{t('common.retry')}
 					</Button>
 				</div>
 			)}
 
 			{!isLoading && !isError && warehousesWithMetrics.length === 0 && (
 				<p className="text-[#a0a0a0] text-sm text-center py-16">
-					Nenhum armazem cadastrado.
+					{t('warehouses.noWarehouses')}
 				</p>
 			)}
 

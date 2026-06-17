@@ -1,5 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Button } from '~/components/ui/button';
+import i18n from '~/i18n/config';
 import type { Warehouse } from '../services/warehousesApi';
 
 type WarehouseWithMetrics = Warehouse & {
@@ -36,22 +38,25 @@ function MaskIcon({ src, w, h }: { src: string; w: number; h: number }) {
 }
 
 function StatusBadge({ isActive }: { isActive: boolean }) {
+	const { t } = useTranslation();
 	if (isActive) {
 		return (
 			<span className="bg-[rgba(28,200,168,0.12)] border border-[rgba(28,200,168,0.3)] text-[#1cc8a8] rounded-[6px] px-[9px] py-[5px] text-[11px] tracking-[0.88px] uppercase whitespace-nowrap shrink-0">
-				ATIVO
+				{t('warehouses.status.active')}
 			</span>
 		);
 	}
 	return (
 		<span className="bg-[#1e1e1e] border border-[#2a2a2a] text-[#a0a0a0] rounded-[6px] px-[9px] py-[5px] text-[11px] tracking-[0.88px] uppercase whitespace-nowrap shrink-0">
-			INATIVO
+			{t('warehouses.status.inactive')}
 		</span>
 	);
 }
 
 export function WarehouseCard({ warehouse }: WarehouseCardProps) {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
+	const locale = i18n.language === 'pt-BR' ? 'pt-BR' : 'en-US';
 
 	return (
 		<div
@@ -74,15 +79,19 @@ export function WarehouseCard({ warehouse }: WarehouseCardProps) {
 
 			<div className="grid grid-cols-2 gap-4 pt-[17px] pb-[24px]">
 				<div className="flex flex-col gap-1">
-					<span className="text-[#a0a0a0] text-[12px]">Produtos Unicos</span>
+					<span className="text-[#a0a0a0] text-[12px]">
+						{t('warehouses.card.uniqueProducts')}
+					</span>
 					<span className="text-[#f0f0f0] text-[20px] leading-[30px]">
-						{warehouse.totalProducts.toLocaleString('pt-BR')}
+						{warehouse.totalProducts.toLocaleString(locale)}
 					</span>
 				</div>
 				<div className="flex flex-col gap-1">
-					<span className="text-[#a0a0a0] text-[12px]">Total Unidades</span>
+					<span className="text-[#a0a0a0] text-[12px]">
+						{t('warehouses.card.totalUnits')}
+					</span>
 					<span className="text-[#f0f0f0] text-[20px] leading-[30px]">
-						{warehouse.totalQuantity.toLocaleString('pt-BR')}
+						{warehouse.totalQuantity.toLocaleString(locale)}
 					</span>
 				</div>
 			</div>
@@ -96,7 +105,7 @@ export function WarehouseCard({ warehouse }: WarehouseCardProps) {
 				className={`w-full gap-2 text-[14px] ${warehouse.isActive ? 'border-[#1cc8a8] text-[#1cc8a8] hover:bg-[rgba(28,200,168,0.08)]' : 'border-[#2a2a2a] text-[#a0a0a0]'}`}
 			>
 				<MaskIcon src="/icons/inventory.svg" w={15} h={15} />
-				Ver Inventario
+				{t('warehouses.card.viewInventory')}
 			</Button>
 		</div>
 	);

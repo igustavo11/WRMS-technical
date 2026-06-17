@@ -1,8 +1,10 @@
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
+import i18n from '~/i18n/config';
 import {
 	useInventory,
 	useProducts,
@@ -22,7 +24,8 @@ type EnrichedItem = {
 };
 
 function formatUpdatedAt(iso: string): string {
-	return new Intl.DateTimeFormat('pt-BR', {
+	const locale = i18n.language === 'pt-BR' ? 'pt-BR' : 'en-US';
+	return new Intl.DateTimeFormat(locale, {
 		day: '2-digit',
 		month: 'short',
 		hour: '2-digit',
@@ -67,6 +70,7 @@ export function InventoryAdmin() {
 	} = useWarehouses();
 
 	const location = useLocation();
+	const { t } = useTranslation();
 	const [skuSearch, setSkuSearch] = useState('');
 	const [warehouseFilter, setWarehouseFilter] = useState<string>(
 		() =>
@@ -74,7 +78,6 @@ export function InventoryAdmin() {
 			'all',
 	);
 	const [productFilter, setProductFilter] = useState('all');
-
 	const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
 
 	const isLoading = invLoading || prodLoading || whLoading;
@@ -123,11 +126,9 @@ export function InventoryAdmin() {
 	if (isError) {
 		return (
 			<div className="p-[32px] flex flex-col items-center justify-center gap-4 mt-16 text-center">
-				<p className="text-[#a0a0a0] text-sm">
-					Não foi possível carregar o inventário.
-				</p>
+				<p className="text-[#a0a0a0] text-sm">{t('inventory.loadError')}</p>
 				<Button variant="outline" onClick={refetchAll}>
-					Tentar novamente
+					{t('common.retry')}
 				</Button>
 			</div>
 		);
@@ -137,7 +138,7 @@ export function InventoryAdmin() {
 		<div className="p-4 md:p-[32px] flex flex-col gap-4 md:gap-[32px]">
 			<div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-0">
 				<h1 className="text-[#f0f0f0] text-[30px] font-bold leading-[36px]">
-					Inventário
+					{t('inventory.title')}
 				</h1>
 				<div className="flex flex-wrap gap-2 md:gap-[12px] items-center">
 					<div className="relative w-full md:w-auto">
@@ -146,7 +147,7 @@ export function InventoryAdmin() {
 							className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[#606060]"
 						/>
 						<input
-							placeholder="Buscar SKU..."
+							placeholder={t('inventory.searchPlaceholder')}
 							value={skuSearch}
 							onChange={(e) => setSkuSearch(e.target.value)}
 							className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-[10px] pl-[41px] pr-[17px] py-[11px] w-full md:w-[256px] text-[#f0f0f0] text-[16px] placeholder:text-[#606060] outline-none focus:border-[#4ce4c3]"
@@ -158,7 +159,7 @@ export function InventoryAdmin() {
 						onChange={(e) => setWarehouseFilter(e.target.value)}
 						className="flex-1 md:flex-none bg-[#1e1e1e] border border-[#2a2a2a] rounded-[10px] pl-[17px] pr-[33px] py-[9px] text-[#f0f0f0] text-[16px] outline-none appearance-none cursor-pointer"
 					>
-						<option value="all">Todos Armazéns</option>
+						<option value="all">{t('inventory.allWarehouses')}</option>
 						{warehouses?.map((w) => (
 							<option key={w.id} value={w.id}>
 								{w.name}
@@ -171,7 +172,7 @@ export function InventoryAdmin() {
 						onChange={(e) => setProductFilter(e.target.value)}
 						className="flex-1 md:flex-none bg-[#1e1e1e] border border-[#2a2a2a] rounded-[10px] pl-[17px] pr-[33px] py-[9px] text-[#f0f0f0] text-[16px] outline-none appearance-none cursor-pointer"
 					>
-						<option value="all">Todos Produtos</option>
+						<option value="all">{t('inventory.allProducts')}</option>
 						{products?.map((p) => (
 							<option key={p.id} value={p.id}>
 								{p.name}
@@ -181,11 +182,10 @@ export function InventoryAdmin() {
 				</div>
 			</div>
 
-			{/* Mobile card list */}
 			<div className="md:hidden flex flex-col gap-3">
 				{filteredRows.length === 0 ? (
 					<p className="text-[#a0a0a0] text-sm text-center py-8">
-						Nenhum item encontrado.
+						{t('inventory.noItems')}
 					</p>
 				) : (
 					filteredRows.map((row) => (
@@ -205,7 +205,9 @@ export function InventoryAdmin() {
 								<span
 									className={`shrink-0 text-[14px] font-bold ${row.quantity < 10 ? 'text-[#e24b4a]' : 'text-[#f0f0f0]'}`}
 								>
-									{row.quantity.toLocaleString('pt-BR')}
+									{row.quantity.toLocaleString(
+										i18n.language === 'pt-BR' ? 'pt-BR' : 'en-US',
+									)}
 								</span>
 							</div>
 							<div className="flex items-center justify-between">
@@ -218,7 +220,7 @@ export function InventoryAdmin() {
 									className="text-[#4ce4c3] shrink-0"
 									onClick={() => setSelectedItem(row)}
 								>
-									Ajustar
+									{t('inventory.adjust')}
 								</Button>
 							</div>
 						</div>
@@ -226,28 +228,27 @@ export function InventoryAdmin() {
 				)}
 			</div>
 
-			{/* Desktop table */}
 			<div className="hidden md:block bg-[#161616] border border-[#2a2a2a] rounded-[8px] overflow-hidden w-full">
 				<table className="w-full text-sm">
 					<thead>
 						<tr className="bg-[#1c1b1b] border-b border-[#2a2a2a]">
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[0.55px] uppercase px-[24px] py-[16px] text-left">
-								PRODUTO
+								{t('inventory.table.product')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[0.55px] uppercase px-[24px] py-[16px] text-left">
-								SKU
+								{t('inventory.table.sku')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[0.55px] uppercase px-[24px] py-[16px] text-left">
-								ARMAZÉM
+								{t('inventory.table.warehouse')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[0.55px] uppercase px-[24px] py-[16px] text-right">
-								QUANTIDADE
+								{t('inventory.table.quantity')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[0.55px] uppercase px-[24px] py-[16px] text-right">
-								ÚLTIMA ATUALIZAÇÃO
+								{t('inventory.table.lastUpdate')}
 							</th>
 							<th className="text-[#a0a0a0] text-[11px] font-medium tracking-[0.55px] uppercase px-[24px] py-[16px] text-center">
-								AÇÃO
+								{t('inventory.table.action')}
 							</th>
 						</tr>
 					</thead>
@@ -258,7 +259,7 @@ export function InventoryAdmin() {
 									colSpan={6}
 									className="px-[24px] py-[21px] text-center text-[#a0a0a0] text-[14px]"
 								>
-									Nenhum item encontrado.
+									{t('inventory.noItems')}
 								</td>
 							</tr>
 						) : (
@@ -276,7 +277,9 @@ export function InventoryAdmin() {
 									<td
 										className={`px-[24px] py-[21px] text-right text-[14px] ${row.quantity < 10 ? 'text-[#e24b4a] font-bold' : 'text-[#f0f0f0] font-medium'}`}
 									>
-										{row.quantity.toLocaleString('pt-BR')}
+										{row.quantity.toLocaleString(
+											i18n.language === 'pt-BR' ? 'pt-BR' : 'en-US',
+										)}
 									</td>
 									<td className="px-[24px] py-[21px] text-[#a0a0a0] text-[12px] text-right whitespace-nowrap">
 										{formatUpdatedAt(row.updatedAt)}
@@ -288,7 +291,7 @@ export function InventoryAdmin() {
 											className="text-[#4ce4c3]"
 											onClick={() => setSelectedItem(row)}
 										>
-											Ajustar
+											{t('inventory.adjust')}
 										</Button>
 									</td>
 								</tr>

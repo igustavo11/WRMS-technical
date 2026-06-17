@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import {
@@ -8,6 +9,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '~/components/ui/table';
+import i18n from '~/i18n/config';
 import type { Reservation } from '../services/reservationsApi';
 
 type Props = {
@@ -19,27 +21,14 @@ type Props = {
 };
 
 function formatDate(dateStr: string): string {
-	const d = new Date(dateStr);
-	const day = String(d.getDate()).padStart(2, '0');
-	const months = [
-		'Jan',
-		'Fev',
-		'Mar',
-		'Abr',
-		'Mai',
-		'Jun',
-		'Jul',
-		'Ago',
-		'Set',
-		'Out',
-		'Nov',
-		'Dez',
-	];
-	const month = months[d.getMonth()];
-	const year = d.getFullYear();
-	const hours = String(d.getHours()).padStart(2, '0');
-	const mins = String(d.getMinutes()).padStart(2, '0');
-	return `${day} ${month} ${year}, ${hours}:${mins}`;
+	const locale = i18n.language === 'pt-BR' ? 'pt-BR' : 'en-US';
+	return new Intl.DateTimeFormat(locale, {
+		day: '2-digit',
+		month: 'short',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	}).format(new Date(dateStr));
 }
 
 function getProductName(
@@ -56,6 +45,37 @@ function getWarehouseName(
 	return warehouses?.find((w) => w.id === warehouseId)?.name ?? '—';
 }
 
+function StatusBadge({ status }: { status: Reservation['status'] }) {
+	const { t } = useTranslation();
+	const config = {
+		Pending: {
+			bg: 'bg-[rgba(239,159,39,0.15)]',
+			border: 'border-[rgba(239,159,39,0.3)]',
+			text: 'text-[#ef9f27]',
+		},
+		Confirmed: {
+			bg: 'bg-[rgba(28,200,168,0.15)]',
+			border: 'border-[rgba(28,200,168,0.3)]',
+			text: 'text-[#1cc8a8]',
+		},
+		Cancelled: {
+			bg: 'bg-[rgba(226,75,74,0.15)]',
+			border: 'border-[rgba(226,75,74,0.3)]',
+			text: 'text-[#e24b4a]',
+		},
+	} as const;
+
+	const c = config[status];
+
+	return (
+		<span
+			className={`inline-flex items-center ${c.bg} ${c.border} ${c.text} border rounded-[6px] px-[9px] py-[5px] text-[12px] leading-none`}
+		>
+			{t(`reservations.status.${status}`)}
+		</span>
+	);
+}
+
 export function ReservationsTable({
 	reservations,
 	isLoading,
@@ -63,6 +83,8 @@ export function ReservationsTable({
 	warehouses,
 	onCancel,
 }: Props) {
+	const { t } = useTranslation();
+
 	if (isLoading) {
 		return (
 			<div className="flex flex-col gap-3">
@@ -76,7 +98,7 @@ export function ReservationsTable({
 	if (reservations.length === 0) {
 		return (
 			<div className="flex items-center justify-center py-16 text-[#a0a0a0]">
-				Nenhuma reserva encontrada.
+				{t('reservations.noReservations')}
 			</div>
 		);
 	}
@@ -86,25 +108,25 @@ export function ReservationsTable({
 			<TableHeader>
 				<TableRow>
 					<TableHead className="w-[100px] text-[#a0a0a0] text-[12px] font-medium uppercase tracking-[0.5px]">
-						ID
+						{t('reservations.table.id')}
 					</TableHead>
 					<TableHead className="text-[#a0a0a0] text-[12px] font-medium uppercase tracking-[0.5px]">
-						Produto
+						{t('reservations.table.product')}
 					</TableHead>
 					<TableHead className="text-[#a0a0a0] text-[12px] font-medium uppercase tracking-[0.5px]">
-						Armazém
+						{t('reservations.table.warehouse')}
 					</TableHead>
 					<TableHead className="w-[80px] text-right text-[#a0a0a0] text-[12px] font-medium uppercase tracking-[0.5px]">
-						Qtd
+						{t('reservations.table.qty')}
 					</TableHead>
 					<TableHead className="w-[120px] text-[#a0a0a0] text-[12px] font-medium uppercase tracking-[0.5px]">
-						Status
+						{t('reservations.table.status')}
 					</TableHead>
 					<TableHead className="w-[160px] text-[#a0a0a0] text-[12px] font-medium uppercase tracking-[0.5px]">
-						Criado em
+						{t('reservations.table.createdAt')}
 					</TableHead>
 					<TableHead className="w-[100px] text-center text-[#a0a0a0] text-[12px] font-medium uppercase tracking-[0.5px]">
-						Ação
+						{t('reservations.table.action')}
 					</TableHead>
 				</TableRow>
 			</TableHeader>
@@ -139,7 +161,7 @@ export function ReservationsTable({
 									onClick={() => onCancel?.(reservation.id)}
 									className="border-[#e24b4a] text-[#e24b4a] rounded-[10px] px-[12px] py-[4px] text-[12px] leading-none h-auto hover:bg-[rgba(226,75,74,0.1)]"
 								>
-									Cancelar
+									{t('reservations.cancel')}
 								</Button>
 							)}
 						</TableCell>
@@ -147,38 +169,5 @@ export function ReservationsTable({
 				))}
 			</TableBody>
 		</Table>
-	);
-}
-
-function StatusBadge({ status }: { status: Reservation['status'] }) {
-	const config = {
-		Pending: {
-			bg: 'bg-[rgba(239,159,39,0.15)]',
-			border: 'border-[rgba(239,159,39,0.3)]',
-			text: 'text-[#ef9f27]',
-			label: 'Pendente',
-		},
-		Confirmed: {
-			bg: 'bg-[rgba(28,200,168,0.15)]',
-			border: 'border-[rgba(28,200,168,0.3)]',
-			text: 'text-[#1cc8a8]',
-			label: 'Confirmado',
-		},
-		Cancelled: {
-			bg: 'bg-[rgba(226,75,74,0.15)]',
-			border: 'border-[rgba(226,75,74,0.3)]',
-			text: 'text-[#e24b4a]',
-			label: 'Cancelado',
-		},
-	} as const;
-
-	const c = config[status];
-
-	return (
-		<span
-			className={`inline-flex items-center ${c.bg} ${c.border} ${c.text} border rounded-[6px] px-[9px] py-[5px] text-[12px] leading-none`}
-		>
-			{c.label}
-		</span>
 	);
 }
