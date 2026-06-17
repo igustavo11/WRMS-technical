@@ -97,7 +97,7 @@ export function DashboardOperator() {
 
 	if (isLoading) {
 		return (
-			<div className="p-4 md:p-8 flex flex-col gap-6 md:gap-8 max-w-[1200px]">
+			<div className="p-4 md:p-8 flex flex-col gap-6 md:gap-8 max-w-[1200px] mx-auto w-full">
 				<div className="hidden md:block">
 					<Skeleton className="h-9 w-48 mb-2" />
 					<Skeleton className="h-5 w-80" />
@@ -127,7 +127,7 @@ export function DashboardOperator() {
 	const { metrics, recentReservations } = data;
 
 	return (
-		<div className="p-4 md:p-8 flex flex-col gap-6 md:gap-8 max-w-[1200px]">
+		<div className="p-4 md:p-8 flex flex-col gap-6 md:gap-8 max-w-[1200px] mx-auto w-full">
 			{/* Desktop title — hidden on mobile (page title is in mobile TopBar) */}
 			<div className="hidden md:block">
 				<h1 className="text-[#f0f0f0] text-[30px] font-bold leading-[36px]">
