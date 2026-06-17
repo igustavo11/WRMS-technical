@@ -13,7 +13,7 @@ export default [
 			route('warehouses', 'routes/placeholder.tsx', { id: 'warehouses' }),
 		]),
 		route('inventory', 'features/inventory/pages/InventoryPage.tsx'),
-		route('reservations', 'routes/placeholder.tsx', { id: 'reservations' }),
+		route('reservations', 'features/reservations/pages/ReservationsPage.tsx'),
 		route('settings', 'routes/placeholder.tsx', { id: 'settings' }),
 	]),
 	route('login', 'features/auth/pages/LoginPage.tsx'),

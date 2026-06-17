@@ -1,8 +1,8 @@
-# Reservas
+# Reservations
 
-**Goal:** Reservations page — shared between Admin and Operator. Full list with status/warehouse/date filters, "Nova Reserva" modal to create a reservation, and inline Cancelar action per row.
+**Goal:** Reservations page — shared between Admin and Operator. Full list with status/warehouse/date filters, "New Reservation" modal to create a reservation, and inline Cancel action per row.
 
-**Figma references:** `node-id=1-1194` (list + Nova Reserva modal open)
+**Figma reference:** `node-id=1-1194` (list + New Reservation modal open)
 
 **Access:** Both roles — no role split needed.
 
@@ -10,14 +10,17 @@
 
 ## Architecture
 
-`ReservasPage` → `useReservations` hook → `GET /api/reservations`. Names resolved by cross-referencing with `useProducts` and `useWarehouses` (the list response only returns IDs). Create: `useCreateReservation` mutation → `POST /api/reservations`. Cancel: `useCancelReservation` mutation → `PUT /api/reservations/:id/cancel`.
+`ReservationsPage` → `useReservations` hook → `GET /api/reservations`. Names resolved client-side by cross-referencing with `useProducts` (from `features/products/hooks/useProducts`) and `useWarehouses` (from `features/inventory/hooks/useInventory`) — both already exist and share TanStack Query cache keys `['products']` and `['warehouses']`.
+
+Create: `useCreateReservation` mutation → `POST /api/reservations`.
+Cancel: `useCancelReservation` mutation → `PUT /api/reservations/:id/cancel`.
 
 **Folder layout:**
 ```
 features/reservations/
-├── pages/ReservasPage.tsx
+├── pages/ReservationsPage.tsx
 ├── components/ReservationsTable.tsx
-├── components/NovaReservaModal.tsx
+├── components/NewReservationModal.tsx
 ├── hooks/useReservations.ts
 ├── hooks/useCreateReservation.ts
 ├── hooks/useCancelReservation.ts
@@ -25,18 +28,109 @@ features/reservations/
 └── services/reservationsApi.ts
 ```
 
+Route: update `routes.ts` — replace `placeholder.tsx` for `reservations` with `features/reservations/pages/ReservationsPage.tsx`.
+
+---
+
 ## UI
 
-- Page header: title "Reservas" + "Nova Reserva" button → opens `NovaReservaModal`.
-- Filters (client-side): Status dropdown (Todos / Pending / Confirmed / Cancelled) · Armazém dropdown · Date range picker.
-- Table columns: ID · Produto · Armazém · QTD · Status (badge) · Criado em · Ação.
-  - Ação column: "Cancelar" button for Pending/Confirmed rows; disabled/hidden for Cancelled.
-- `NovaReservaModal`: Produto select (from `GET /api/products`) · Armazém select (from `GET /api/warehouses`) · Quantidade input. Shows available stock inline once both product + warehouse are selected (computed from inventory list). On `422 INSUFFICIENT_STOCK`, show "Estoque insuficiente. A quantidade solicitada excede o disponível no armazém." field error. On success: close + toast "Reserva criada" + invalidate `reservations` query.
+### Page
+
+- Header: title "Reservations" + "New Reservation" button — solid teal: `bg-[#1cc8a8] text-[#00382d]`
+- Filters bar (client-side only): Status select · Warehouse select · Date range (two inputs: From / To) · "Clear Filters" button
+- Table + New Reservation modal
+
+### Table columns
+
+| Column | Notes |
+|--------|-------|
+| ID | First 8 chars of UUID, prefixed with `#` (e.g. `#0195b0d7`) |
+| Product | Resolved from `useProducts` by `productId` |
+| Warehouse | Resolved from `useWarehouses` by `warehouseId` |
+| Qty | Right-aligned |
+| Status | Badge (see colors below) |
+| Created at | Formatted date (`DD MMM YYYY, HH:mm`) |
+| Action | See action rules below |
+
+> **"Created by" column omitted.** The Figma design shows a "Criado por" column, but the API never returns user info — reservations are not tied to any user (`GET /api/reservations` has no `userId` field). Omitting it avoids showing a permanently empty column.
+
+### Status badges
+
+| Status | Background | Border | Text |
+|--------|-----------|--------|------|
+| `Pending` | `rgba(239,159,39,0.15)` | `rgba(239,159,39,0.3)` | `#ef9f27` |
+| `Confirmed` | `rgba(28,200,168,0.15)` | `rgba(28,200,168,0.3)` | `#1cc8a8` |
+| `Cancelled` | `rgba(226,75,74,0.15)` | `rgba(226,75,74,0.3)` | `#e24b4a` |
+
+### Action column rules
+
+- **Pending** → "Cancel" button: `border border-[#e24b4a] text-[#e24b4a] rounded-[10px]`
+- **Confirmed** → "Cancel" button (same style as Pending) — the API supports cancelling Confirmed reservations; showing "Cancel" is more useful than a non-functional "View Details"
+- **Cancelled** → `—` (no action). Button hidden to avoid the `422 RESERVATION_ALREADY_CANCELLED` error path
+
+> **Figma discrepancy:** Figma shows "View Details" for Confirmed and Cancelled rows, but there is no detail view in the current scope. The pragmatic choice is Cancel for Pending/Confirmed and nothing for Cancelled, aligned with the API's business rules.
+
+### New Reservation Modal
+
+Fields:
+- **Product** `*` — shadcn `Select`, options from `GET /api/products` (only active products shown)
+- **Warehouse** `*` — shadcn `Select`, options from `GET /api/warehouses` (only active warehouses shown)
+- **Quantity** `*` — number input, min 1
+
+Inline stock info (shown once both Product and Warehouse are selected):
+```
+ⓘ Available: X units   ← teal #1cc8a8
+```
+Computed from `GET /api/inventory` for the selected `productId × warehouseId` pair.
+
+Error states:
+- Quantity > available stock → red border on input + `"Insufficient stock. The requested quantity exceeds the available stock for this warehouse."` field error
+- `422 INSUFFICIENT_STOCK` from API → same field error (guard for race conditions)
+- `422 INACTIVE_PRODUCT` / `422 INACTIVE_WAREHOUSE` → toast error
+- Submit button disabled while `isPending` or when a field-level error exists
+
+On success: close modal + `toast.success("Reservation created.")` + invalidate `['reservations']` and `['inventory']` queries.
+
+Footer buttons:
+- "Cancel" — `bg-[#1e1e1e] border border-[#2a2a2a] text-[#f0f0f0]`
+- "Create Reservation" — enabled: `bg-[#1cc8a8] text-[#00382d]` / disabled: `bg-[#353534] text-[#a0a0a0]`
+
+---
 
 ## Decisions
 
-- Names are resolved client-side by joining the reservations list with cached products/warehouses queries — the API only returns IDs on `GET /api/reservations`. The dashboard endpoint returns resolved names but only for the last 5.
-- Available stock shown in the modal is computed frontend-side from `GET /api/inventory` quantity for the selected product × warehouse pair — there is no dedicated "available stock" endpoint.
-- Date range filter is client-side only (no API query params for date filtering).
-- "Cancelar" on an already-cancelled reservation is prevented client-side (button hidden/disabled) to avoid the `422 RESERVATION_ALREADY_CANCELLED` error path unnecessarily.
-- The Nova Reserva modal is also linked from the Operator Dashboard CTA ("Criar Nova Reserva") and from the Operator Inventário page CTA. Extract the modal to `shared/components/NovaReservaModal.tsx` if those links need to trigger it inline; otherwise navigate to `/reservas` from those CTAs (simpler, deferred to integration).
+- **Name resolution is client-side.** The `GET /api/reservations` response contains only `productId` and `warehouseId`. Names are resolved by looking up the cached `['products']` and `['warehouses']` queries — no extra fetches needed at render time.
+- **Available stock is computed frontend-side.** `GET /api/inventory` returns total quantity (available + reserved). The modal uses this value directly as "available" — it's a close-enough approximation since the same session's reservations have already deducted stock at the API level.
+- **Date range filter is client-side only.** No API query params for date filtering. Two `date` inputs (From / To) filter `createdAt` against the selected range.
+- **Warehouse filter shows only warehouse names in scope.** Filter options are built from `useWarehouses`, so the dropdown reflects actual warehouses rather than only those present in the current reservation list.
+- **Reuse existing hooks.** `useProducts` from `features/products/hooks/useProducts` and `useWarehouses`/`useInventory` from `features/inventory/hooks/useInventory` are imported directly — no duplication of API functions.
+
+---
+
+## Tests (`tests/reservations.test.tsx`)
+
+### `ReservationsPage`
+
+1. Renders loading skeleton while data is fetching
+2. Renders reservation rows with resolved product and warehouse names
+3. Status badge renders correct color for each status (Pending / Confirmed / Cancelled)
+4. "Cancel" button shown for Pending rows
+5. "Cancel" button shown for Confirmed rows
+6. No Cancel button for Cancelled rows
+7. Status filter — selecting "Pending" hides Confirmed and Cancelled rows
+8. Warehouse filter — selecting a warehouse hides rows from other warehouses
+9. Date range filter — rows outside the selected range are hidden
+10. "Clear Filters" resets status, warehouse, and date range to defaults
+11. "New Reservation" button opens modal
+
+### `NewReservationModal`
+
+1. Form validation — submit without filling fields shows required errors
+2. Shows available stock once product and warehouse are both selected
+3. Successful creation — closes modal, shows success toast, does not call `onClose` on cancel
+4. `422 INSUFFICIENT_STOCK` from API — shows field error on quantity input
+5. `422 INACTIVE_PRODUCT` — shows toast error
+6. `422 INACTIVE_WAREHOUSE` — shows toast error
+7. Generic error — shows generic toast error
+8. "Cancel" button closes modal and resets form
+9. Submit button is disabled while mutation is pending
