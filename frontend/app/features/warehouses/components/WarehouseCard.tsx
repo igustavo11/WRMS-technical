@@ -44,7 +44,7 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
 		);
 	}
 	return (
-		<span className="bg-[#1e1e1e] border border-[#3a3a3a] text-[#a0a0a0] rounded-[6px] px-[9px] py-[5px] text-[11px] tracking-[0.88px] uppercase whitespace-nowrap shrink-0">
+		<span className="bg-[#1e1e1e] border border-[#2a2a2a] text-[#a0a0a0] rounded-[6px] px-[9px] py-[5px] text-[11px] tracking-[0.88px] uppercase whitespace-nowrap shrink-0">
 			INATIVO
 		</span>
 	);

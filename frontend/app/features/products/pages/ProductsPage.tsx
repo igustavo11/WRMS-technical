@@ -19,9 +19,9 @@ function ProductStatusBadge({ isActive }: { isActive: boolean }) {
 				label: 'ATIVO',
 			}
 		: {
-				bg: 'bg-[rgba(226,75,74,0.15)]',
-				border: 'border-[rgba(226,75,74,0.3)]',
-				text: 'text-[#e24b4a]',
+				bg: 'bg-[#1e1e1e]',
+				border: 'border-[#2a2a2a]',
+				text: 'text-[#a0a0a0]',
 				label: 'INATIVO',
 			};
 	return (

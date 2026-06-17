@@ -75,11 +75,11 @@ function MetricCard({
 				<span className="text-[#a0a0a0] opacity-70">
 					<MaskIcon src={icon} w={iconSize.w} h={iconSize.h} />
 				</span>
-				<span className="text-[#bbcac4] md:text-[#a0a0a0] text-[14px] md:text-[11px] md:font-medium md:tracking-[0.88px] md:uppercase">
+				<span className="text-[#a0a0a0] text-[14px] md:text-[11px] md:font-medium md:tracking-[0.88px] md:uppercase">
 					{label}
 				</span>
 			</div>
-			<span className="text-[#f0f0f0] md:text-[#1cc8a8] text-[30px] md:text-[36px] font-bold tracking-[-0.72px] leading-[1.2]">
+			<span className="text-[#1cc8a8] text-[30px] md:text-[36px] font-bold tracking-[-0.72px] leading-[1.2]">
 				{typeof value === 'number' ? value.toLocaleString('pt-BR') : value}
 			</span>
 		</div>

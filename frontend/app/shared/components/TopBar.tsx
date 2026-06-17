@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from 'react-router';
-import { Button } from '~/components/ui/button';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,29 +7,6 @@ import {
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { useAuth } from '~/features/auth/hooks/useAuth';
-
-function TopBarIcon({ src, size = 18 }: { src: string; size?: number }) {
-	return (
-		<span
-			aria-hidden
-			style={{
-				display: 'inline-block',
-				width: size,
-				height: size,
-				flexShrink: 0,
-				backgroundColor: 'currentColor',
-				maskImage: `url(${src})`,
-				maskRepeat: 'no-repeat',
-				maskSize: 'contain',
-				maskPosition: 'center',
-				WebkitMaskImage: `url(${src})`,
-				WebkitMaskRepeat: 'no-repeat',
-				WebkitMaskSize: 'contain',
-				WebkitMaskPosition: 'center',
-			}}
-		/>
-	);
-}
 
 const routeTitles: Record<string, string> = {
 	'/': 'Dashboard',
@@ -75,12 +51,6 @@ export function TopBar() {
 					)}
 				</div>
 				<div className="flex items-center gap-3">
-					<div className="relative">
-						<div className="w-10 h-10 bg-[#1e1e1e] border border-[#2a2a2a] rounded-full flex items-center justify-center text-white">
-							<TopBarIcon src="/icons/bell.svg" size={16} />
-						</div>
-						<div className="absolute top-[9px] right-[9px] w-2 h-2 bg-[#4ce4c3] rounded-full border border-[#161616]" />
-					</div>
 					<DropdownMenu>
 						<DropdownMenuTrigger>
 							<div className="relative cursor-pointer">
@@ -138,43 +108,6 @@ export function TopBar() {
 							{formatDate()}
 						</span>
 					)}
-					<div className="flex items-center gap-3">
-						{isAdmin ? (
-							<>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="text-white hover:text-white opacity-60 hover:opacity-100 size-8"
-								>
-									<TopBarIcon src="/icons/calendar.svg" size={18} />
-								</Button>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="text-white hover:text-white opacity-60 hover:opacity-100 size-8"
-								>
-									<TopBarIcon src="/icons/bell.svg" size={16} />
-								</Button>
-							</>
-						) : (
-							<>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="text-white hover:text-white opacity-60 hover:opacity-100 size-8"
-								>
-									<TopBarIcon src="/icons/bell.svg" size={16} />
-								</Button>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="text-white hover:text-white opacity-60 hover:opacity-100 size-8"
-								>
-									<TopBarIcon src="/icons/calendar.svg" size={18} />
-								</Button>
-							</>
-						)}
-					</div>
 				</div>
 			</header>
 		</>
