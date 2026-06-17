@@ -9,7 +9,7 @@ export default [
 	layout('shared/components/ProtectedLayout.tsx', [
 		index('features/dashboard/pages/DashboardPage.tsx'),
 		layout('shared/components/AdminLayout.tsx', [
-			route('products', 'routes/placeholder.tsx', { id: 'products' }),
+			route('products', 'features/products/pages/ProductsPage.tsx'),
 			route('warehouses', 'routes/placeholder.tsx', { id: 'warehouses' }),
 		]),
 		route('inventory', 'features/inventory/pages/InventoryPage.tsx'),
