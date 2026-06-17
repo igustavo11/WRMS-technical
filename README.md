@@ -64,7 +64,7 @@ cd frontend && cp .env.example .env
 bun install && bun run dev
 ```
 
-### Credenciais de seed
+### Seed credentials
 
 | Role | Email | Password |
 |-------|-------|-------|
