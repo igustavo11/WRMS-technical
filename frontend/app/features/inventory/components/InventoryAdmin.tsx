@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useLocation } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import {
@@ -65,8 +66,11 @@ export function InventoryAdmin() {
 		refetch: refetchWh,
 	} = useWarehouses();
 
+	const location = useLocation();
 	const [skuSearch, setSkuSearch] = useState('');
-	const [warehouseFilter, setWarehouseFilter] = useState('all');
+	const [warehouseFilter, setWarehouseFilter] = useState<string>(
+		() => (location.state as { warehouseFilter?: string })?.warehouseFilter ?? 'all',
+	);
 	const [productFilter, setProductFilter] = useState('all');
 
 	const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);

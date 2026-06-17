@@ -10,7 +10,7 @@ export default [
 		index('features/dashboard/pages/DashboardPage.tsx'),
 		layout('shared/components/AdminLayout.tsx', [
 			route('products', 'features/products/pages/ProductsPage.tsx'),
-			route('warehouses', 'routes/placeholder.tsx', { id: 'warehouses' }),
+			route('warehouses', 'features/warehouses/pages/WarehousesPage.tsx'),
 		]),
 		route('inventory', 'features/inventory/pages/InventoryPage.tsx'),
 		route('reservations', 'features/reservations/pages/ReservationsPage.tsx'),
