@@ -52,7 +52,7 @@ The app uses React Router v7 in SPA mode for client-side routing with a route co
 | **React Hook Form** | v7 | Zero re-renders on keystrokes (uncontrolled inputs); schema-driven via `zodResolver` |
 | **Zod** | v4 | Schema-first validation — define once, get both runtime validation and inferred TypeScript types |
 | **Axios** | v1 | Interceptor pattern for auth header injection and global 401 handling; cleaner than `fetch` for this use case |
-| **shadcn/ui** | v4 | Owned components (copy-paste into `app/components/ui/`) — no design-system lock-in, full Tailwind v4 token control, smaller bundle. Chosen over MUI/Ant Design because the WTEC dark theme conflicts with Material Design's opinionated defaults |
+| **shadcn/ui** (custom) | v4 | Owned components (copy-paste into `app/components/ui/`) — no design-system lock-in, full Tailwind v4 token control, smaller bundle. Chosen over MUI/Ant Design specifically because the copy-paste model allows **pixel-perfect alignment with the custom Figma design** — every token is set to exact Figma hex values, which would fight against MUI's opinionated defaults |
 | **Tailwind CSS** | v4 | CSS-first config; `@theme inline` maps design tokens directly to CSS custom properties |
 | **Biome** | v2 | Single tool for lint + format — replaces ESLint + Prettier with faster Rust-based execution |
 | **Vitest + RTL** | v4 + v16 | Vite-native test runner with jsdom; React Testing Library ensures tests reflect user behavior, not implementation details |
@@ -219,7 +219,7 @@ Client-side validation (Zod) and server-side errors (API error codes) are both d
 
 ### Design System & Theme
 
-All color tokens are set to **exact Figma hex values** in `app/app.css` and are never overridden to shadcn defaults:
+The entire design system was built to match the [Figma UI reference](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1) pixel by pixel. All color tokens are set to **exact Figma hex values** in `app/app.css` and are never overridden to shadcn defaults:
 
 | Token | Value | Usage |
 |---|---|---|

@@ -11,10 +11,10 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 ## Stack
 
 | Layer | Technology |
-|---|---|
+|---|---|---|
 | Runtime | Bun |
-| Backend | Fastify 5 |
-| Frontend | React + shadcn/ui + Tailwind CSS v4 + Vite |
+| Backend | Fastify 5 — [see backend README](./backend/README.md) |
+| Frontend | React + shadcn/ui (custom) + Tailwind CSS v4 + Vite — [see frontend README](./frontend/README.md) |
 | ORM | Prisma 7 (adapter-based, swappable) |
 | Database | SQL Server 2022 (Docker) — swappable to MySQL/PG |
 | Auth | JWT (HS256) |
@@ -177,12 +177,13 @@ automatic retry on write conflict — guaranteeing no oversell.
 ## Documentation
 
 | Resource | What you'll find |
-|---|---|
+|---|---|---|
 | [`backend/README.md`](./backend/README.md) | Full system design, 4 Mermaid diagrams, scaling, DB swappability, trade-offs, setup |
+| [`frontend/README.md`](./frontend/README.md) | Frontend architecture, feature-slice layout, design system, auth flow, responsive strategy, testing |
 | [`frontend/docs/api-contract.md`](./frontend/docs/api-contract.md) | Complete API contract with curl examples, schemas, seed data |
 | [`backend/docs/database-schema.md`](./backend/docs/database-schema.md) | ER diagram and modeling notes |
 | `http://localhost:3333/documentation` | Interactive Swagger UI (try endpoints live) |
-| [Figma Design](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1) | UI reference |
+| [Figma Design](https://www.figma.com/design/idNN29HocMNZAPIzPnUnBB/Wtec-technical-assessment-WRMS?node-id=0-1&t=KFTCkeIEqVoQfAQh-1) | UI reference — custom dark theme implemented pixel-by-pixel in shadcn/ui |
 
 ---
 
