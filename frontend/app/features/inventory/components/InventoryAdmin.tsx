@@ -69,7 +69,9 @@ export function InventoryAdmin() {
 	const location = useLocation();
 	const [skuSearch, setSkuSearch] = useState('');
 	const [warehouseFilter, setWarehouseFilter] = useState<string>(
-		() => (location.state as { warehouseFilter?: string })?.warehouseFilter ?? 'all',
+		() =>
+			(location.state as { warehouseFilter?: string })?.warehouseFilter ??
+			'all',
 	);
 	const [productFilter, setProductFilter] = useState('all');
 

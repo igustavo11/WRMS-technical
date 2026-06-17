@@ -247,7 +247,9 @@ describe('WarehousesPage', () => {
 
 		await user.click(screen.getByRole('button', { name: /Ver Inventario/i }));
 
-		expect(mockNavigate).toHaveBeenCalledWith('/inventory', { state: { warehouseFilter: '1' } });
+		expect(mockNavigate).toHaveBeenCalledWith('/inventory', {
+			state: { warehouseFilter: '1' },
+		});
 	});
 });
 

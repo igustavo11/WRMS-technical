@@ -73,10 +73,22 @@ const operatorNavItems: NavItem[] = [
 		iconSize: { w: 18, h: 18 },
 	},
 	{
+		to: '/products',
+		label: 'Produtos',
+		icon: '/icons/products.svg',
+		iconSize: { w: 20, h: 20 },
+	},
+	{
 		to: '/inventory',
 		label: 'Inventário',
 		icon: '/icons/inventory.svg',
 		iconSize: { w: 18, h: 18 },
+	},
+	{
+		to: '/warehouses',
+		label: 'Armazéns',
+		icon: '/icons/warehouses.svg',
+		iconSize: { w: 20, h: 18 },
 	},
 	{
 		to: '/reservations',

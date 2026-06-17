@@ -134,7 +134,7 @@ export function InventoryOperator() {
 				</div>
 				<Link
 					to="/reservations"
-					className="bg-[#1cc8a8] text-[#0a3d34] rounded-[10px] px-[24px] py-[12px] flex items-center gap-[8px] text-[14px] font-semibold self-start md:self-auto"
+					className="hidden md:flex bg-[#1cc8a8] text-[#0a3d34] rounded-[10px] px-[24px] py-[12px] items-center gap-[8px] text-[14px] font-semibold self-start md:self-auto"
 				>
 					<Plus size={14} />
 					Criar Reserva
@@ -161,10 +161,10 @@ export function InventoryOperator() {
 						return (
 							<div
 								key={row.id}
-								className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-[8px] p-[17px] flex flex-col gap-[8px]"
+								className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-[8px] p-[13px] flex flex-col gap-[8px]"
 							>
 								<div className="flex items-start justify-between gap-3">
-									<div className="flex flex-col min-w-0">
+									<div className="flex flex-col min-w-0 flex-1">
 										<span className="text-[#f0f0f0] text-[14px] font-bold truncate">
 											{row.productName}
 										</span>
@@ -172,22 +172,26 @@ export function InventoryOperator() {
 											{row.productSku}
 										</span>
 									</div>
-									<span className="text-[#f0f0f0] text-[14px] font-medium shrink-0">
-										{row.quantity.toLocaleString('pt-BR')}
-									</span>
+									<div className="flex flex-col items-end shrink-0">
+										<span
+											className={`text-[20px] font-bold leading-[30px] ${status === 'Crítico' ? 'text-[#e24b4a]' : 'text-[#4ce4c3]'}`}
+										>
+											{row.quantity.toLocaleString('pt-BR')}
+										</span>
+										<span className="text-[#a0a0a0] text-[12px]">Unidades</span>
+									</div>
 								</div>
 								<div className="flex items-center justify-between">
 									<span className="text-[#a0a0a0] text-[12px] truncate">
 										{row.warehouseName}
 									</span>
 									<div
-										className={`inline-flex items-center gap-[6px] h-[22.8px] rounded-[6px] px-[8px] border ${badge.bg} ${badge.border} shrink-0`}
+										className={`inline-flex items-center h-[22.8px] rounded-[6px] px-[8px] border ${badge.bg} ${badge.border} shrink-0`}
 									>
-										<div className={`size-[6px] rounded-full ${badge.dot}`} />
 										<span
 											className={`text-[12px] leading-[16.8px] ${badge.text}`}
 										>
-											{status}
+											{status.toUpperCase()}
 										</span>
 									</div>
 								</div>
@@ -196,6 +200,14 @@ export function InventoryOperator() {
 					})
 				)}
 			</div>
+
+			{/* Mobile FAB */}
+			<Link
+				to="/reservations"
+				className="md:hidden fixed bottom-[80px] right-[16px] z-10 bg-[#1cc8a8] rounded-full size-[56px] flex items-center justify-center shadow-lg"
+			>
+				<Plus size={16} className="text-[#004e40]" />
+			</Link>
 
 			{/* Desktop table */}
 			<div className="hidden md:block bg-[#161616] border border-[#2a2a2a] rounded-[8px] overflow-hidden w-full">

@@ -239,7 +239,7 @@ describe('InventoryOperator', () => {
 
 		renderWithProviders(<InventoryOperator />);
 
-		const badges = screen.getAllByText(/Normal|Crítico|Atenção/);
+		const badges = screen.getAllByText(/Normal|Crítico|Atenção/i);
 		expect(badges).toHaveLength(4);
 	});
 
