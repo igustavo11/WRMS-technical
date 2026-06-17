@@ -41,6 +41,7 @@ reservations across multiple warehouses. Built with TypeScript end-to-end.
 ### Full stack with Docker (recommended)
 
 ```bash
+cp .env.example .env
 docker compose up --build
 ```
 
